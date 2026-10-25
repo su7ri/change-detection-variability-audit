@@ -74,3 +74,33 @@ Dated, appended after the fact, never edited in place.
   - `symmetric`: noise added on the raw scale, relative SD capped at 0.45, values floored at 5% of the user's level.
   The `ideal` and `realistic` results are unchanged (checked: identical output). The decision rule is
   unchanged and still applies to `realistic`; the diagnostics only help explain it.
+- 2026-10-25, written BEFORE running the experiments below. The first pilot found no gap for personal-baseline
+  detectors in the standardised convention. Four more scenarios test where a gap could still appear. All use
+  the same simulated data as `realistic` (same seed_key), the same detectors, the same metrics, margins and
+  decision rule, and each detector is re-tuned to 3.33 alarm episodes per 100 user-days in its own scenario.
+  - `missing`: each day is missing with probability 0.05 + 0.30 x (sigma - 0.10) / 0.80, so high-variability
+    users miss more days (5% to 35%). This direction is an assumption, not an estimate from data.
+    Statistics use observed days only. A window detector abstains unless the last 7 days have at least 3
+    observations and the prior window has at least half of its days. No detector alarms on a day without an
+    observation. EWMA and CUSUM skip the update on missing days. Alarm rate is still per calendar user-day.
+    The baseline for EWMA and CUSUM needs at least half of its days observed, otherwise the series abstains.
+  - `short14`: prior window 14 days, EWMA/CUSUM baseline = days 0-13. `short7`: both 7 days. Evaluation days,
+    variability terciles (28-day log SD) and injections are unchanged.
+  - `missing_short14`: both changes together.
+  - Also reported for the missing scenarios (descriptive, no margin): share of evaluation days observed and
+    share on which the window detectors can decide (abstention coverage), by tercile.
+  - Not run in this round: variance-increase and gradual (ramp) changes. The four detectors are level detectors;
+    a variance change would need new detectors that are not in this plan.
+  - Decision rule: H2 is supported if, in any of these four scenarios, a personal-baseline detector shows a
+    REAL gap at k = 1 (standardised) on alarm rate, restricted mean delay or detection within 14 days.
+- 2026-10-25, after running the four scenarios above (results in results/pilot_summary.md, 1000 bootstrap
+  resamples, the same as the earlier committed runs; the old four scenarios are byte-identical to before).
+  - In no new scenario does a personal-baseline detector show a REAL gap in restricted mean delay or in detection
+    within 14 days, at k = 1 or at any other standardised effect size.
+  - One cell crosses the alarm-rate margin by the letter of the rule: CUSUM in `missing`, gap -1.02 [-1.21, -0.82]
+    per 100 user-days (margin 1.0). It is the same skewness effect as in `realistic` (-0.99), `ideal` (-1.16);
+    it disappears when detectors run on log(steps) (-0.11) and in `symmetric` (-0.03), and it points the other way
+    from harm (high-variability users get fewer false alarms). Missing days add nothing to it.
+    Reported as a knife-edge cell of a known artefact, not as support for H2.
+  - Missing days do reduce coverage for high-variability users (observed days 0.90 / 0.87 / 0.83 by tercile;
+    window detectors can decide on 0.90 / 0.87 / 0.82 of days). That is a coverage gap, not a detection gap.

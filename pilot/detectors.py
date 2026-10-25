@@ -33,6 +33,52 @@ class Stats:
         self.u = (x[..., sim.BASE_DAYS:] - m0) / s0          # standardised against days 0-27
 
 
+class StatsNaN:
+    """Same statistics as Stats, but for series with missing days (NaN) and/or other window lengths.
+    Uses observed days only. A window detector abstains (delta = NaN, no alarm) unless the last 7 days have
+    at least 3 observations and the prior window at least half of its days (and at least 4); it also
+    abstains on a day without an observation. EWMA/CUSUM need at least half of the baseline observed."""
+
+    def __init__(self, x: np.ndarray, prior_len: int = 21, base_len: int = 28):
+        days = np.arange(sim.BASE_DAYS, x.shape[-1])
+        obs = ~np.isnan(x)
+        xz = np.where(obs, x, 0.0)
+
+        def win(w):
+            cnt = swv(obs.astype(float), w, axis=-1).sum(-1)
+            s1 = swv(xz, w, axis=-1).sum(-1)
+            s2 = swv(xz ** 2, w, axis=-1).sum(-1)
+            with np.errstate(invalid="ignore", divide="ignore"):
+                mean = s1 / cnt
+                var = np.clip((s2 - cnt * mean ** 2) / (cnt - 1.0), 0.0, None)
+            return cnt, mean, var
+
+        cr, mr, _ = win(7)
+        cp, mp, vp = win(prior_len)
+        cr, mr = cr[..., days - 6], mr[..., days - 6]
+        pi = days - prior_len - 6                       # prior window = days t-prior_len-6 .. t-7
+        cp, mp, vp = cp[..., pi], mp[..., pi], vp[..., pi]
+        ok = (cr >= 3) & (cp >= max(4, int(np.ceil(prior_len / 2)))) & obs[..., sim.BASE_DAYS:]
+        self.delta = np.where(ok, mr - mp, np.nan)
+        self.prior_sd = np.maximum(np.sqrt(vp), 1e-9)
+        self.can_decide = ok                             # coverage of the window detectors
+
+        b = x[..., :base_len]
+        nb = (~np.isnan(b)).sum(-1, keepdims=True)
+        with np.errstate(all="ignore"):
+            m0 = np.nanmean(b, axis=-1, keepdims=True)
+            s0 = np.maximum(np.nanstd(b, axis=-1, ddof=1, keepdims=True), 1e-9)
+        good = nb >= max(2, int(np.ceil(base_len / 2)))
+        self.u = np.where(good, (x[..., sim.BASE_DAYS:] - m0) / s0, np.nan)
+
+
+def make_stats(x: np.ndarray, scen) -> "Stats | StatsNaN":
+    """Old Stats when nothing differs from the first four scenarios (keeps their output identical)."""
+    if scen.missing or (scen.prior_len, scen.base_len) != (21, 28):
+        return StatsNaN(x, scen.prior_len, scen.base_len)
+    return Stats(x)
+
+
 def fire_fixed(s: Stats, T: float) -> np.ndarray:
     return s.delta <= -T
 
@@ -47,8 +93,9 @@ def fire_ewma(s: Stats, L: float, lam: float = EWMA_LAMBDA) -> np.ndarray:
     state = np.zeros(u.shape[:-1])
     out = np.zeros(u.shape, dtype=bool)
     for j in range(u.shape[-1]):
-        state = lam * u[..., j] + (1.0 - lam) * state
-        f = state <= thr
+        seen = ~np.isnan(u[..., j])                      # missing day: no update, no alarm
+        state = np.where(seen, lam * np.nan_to_num(u[..., j]) + (1.0 - lam) * state, state)
+        f = seen & (state <= thr)
         out[..., j] = f
         state = np.where(f, 0.0, state)
     return out
@@ -59,8 +106,9 @@ def fire_cusum(s: Stats, h: float, k: float = CUSUM_K) -> np.ndarray:
     c = np.zeros(u.shape[:-1])
     out = np.zeros(u.shape, dtype=bool)
     for j in range(u.shape[-1]):
-        c = np.maximum(0.0, c - u[..., j] - k)
-        f = c >= h
+        seen = ~np.isnan(u[..., j])
+        c = np.where(seen, np.maximum(0.0, c - np.nan_to_num(u[..., j]) - k), c)
+        f = seen & (c >= h)
         out[..., j] = f
         c = np.where(f, 0.0, c)
     return out

@@ -39,6 +39,9 @@ class Scenario:
     additive: bool = False      # noise added on the raw scale (symmetric) instead of the log scale (skewed)
     log_detect: bool = False    # detectors run on log(steps) instead of steps
     seed_key: str = ""          # scenarios with the same seed_key get identical simulated data
+    missing: bool = False       # days missing, more often for high-variability users
+    prior_len: int = 21         # window detectors: days in the prior window
+    base_len: int = 28          # EWMA/CUSUM: days in the fixed baseline
 
 
 IDEAL = Scenario("ideal", heavy_tails=False, weekly=False, autocorr=False)
@@ -46,7 +49,16 @@ REALISTIC = Scenario("realistic", heavy_tails=True, weekly=True, autocorr=True)
 # Diagnostics for the skewness confound (variability and skewness both grow with sigma in the log-normal model):
 REALISTIC_LOG = Scenario("realistic_log", True, True, True, log_detect=True, seed_key="realistic")
 SYMMETRIC = Scenario("symmetric", True, True, True, additive=True)
-SCENARIOS = {s.name: s for s in (IDEAL, REALISTIC, REALISTIC_LOG, SYMMETRIC)}
+# Where a gap could still appear: missing days tied to variability, shorter baselines (same data as `realistic`)
+MISSING = Scenario("missing", True, True, True, seed_key="realistic", missing=True)
+SHORT14 = Scenario("short14", True, True, True, seed_key="realistic", prior_len=14, base_len=14)
+SHORT7 = Scenario("short7", True, True, True, seed_key="realistic", prior_len=7, base_len=7)
+MISSING_SHORT14 = Scenario("missing_short14", True, True, True, seed_key="realistic", missing=True,
+                           prior_len=14, base_len=14)
+SCENARIOS = {s.name: s for s in (IDEAL, REALISTIC, REALISTIC_LOG, SYMMETRIC, MISSING, SHORT14, SHORT7,
+                                 MISSING_SHORT14)}
+
+P_MISS_MIN, P_MISS_SPAN = 0.05, 0.30     # missing probability = 0.05 + 0.30 * (sigma - 0.10) / 0.80
 
 
 def make_users(n: int, rng: np.random.Generator) -> dict:
@@ -93,9 +105,20 @@ def draw_onsets(n: int, reps: int, rng: np.random.Generator) -> np.ndarray:
     return rng.integers(ONSET_RANGE[0], ONSET_RANGE[1] + 1, size=(n, reps))
 
 
+def apply_missing(x: np.ndarray, users: dict, rng: np.random.Generator) -> np.ndarray:
+    """Set days to NaN at random. Probability rises with the user's variability sigma (an assumption)."""
+    p = P_MISS_MIN + P_MISS_SPAN * (users["sigma"] - 0.10) / 0.80
+    gone = rng.random(x.shape) < p[:, None, None]
+    return np.where(gone, np.nan, x)
+
+
+def _std(x: np.ndarray, axis: int = -1) -> np.ndarray:
+    return np.nanstd(x, axis=axis, ddof=1) if np.isnan(x).any() else x.std(axis=axis, ddof=1)
+
+
 def baseline_sd(x: np.ndarray) -> np.ndarray:
-    """Each series' own SD over the baseline window (days 0-27)."""
-    return x[..., :BASE_DAYS].std(axis=-1, ddof=1)
+    """Each series' own SD over the baseline window (days 0-27), observed days only."""
+    return _std(x[..., :BASE_DAYS])
 
 
 def inject(x: np.ndarray, onset: np.ndarray, delta: np.ndarray) -> np.ndarray:
@@ -116,6 +139,6 @@ def floor_fraction(x: np.ndarray, onset: np.ndarray, delta: np.ndarray) -> np.nd
 def variability_terciles(x: np.ndarray) -> np.ndarray:
     """Group per user (0 low, 1 mid, 2 high) from log-scale SD over the baseline window of replicate 0.
     Estimated from data, as it would be on real users (so groups are noisy)."""
-    lsd = np.log(x[:, 0, :BASE_DAYS]).std(axis=-1, ddof=1)
+    lsd = _std(np.log(x[:, 0, :BASE_DAYS]))
     q1, q2 = np.quantile(lsd, [1.0 / 3.0, 2.0 / 3.0])
     return np.where(lsd <= q1, 0, np.where(lsd <= q2, 1, 2))

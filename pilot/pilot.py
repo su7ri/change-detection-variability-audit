@@ -58,7 +58,9 @@ def run_scenario(scen: sim.Scenario, n_users: int, reps: int, n_boot: int):
     rng_c = np.random.default_rng([CAL_SEED, key])
     users_c = sim.make_users(n_users, rng_c)
     x_c = sim.simulate_series(users_c, max(reps // 2, 5), scen, rng_c)
-    s_c = dt.Stats(prep(x_c))
+    if scen.missing:
+        x_c = sim.apply_missing(x_c, users_c, rng_c)
+    s_c = dt.make_stats(prep(x_c), scen)
     params = {name: dt.calibrate(name, s_c, TARGET_RATE) for name in dt.DETECTORS}
 
     # 2. evaluation set
@@ -66,9 +68,11 @@ def run_scenario(scen: sim.Scenario, n_users: int, reps: int, n_boot: int):
     users = sim.make_users(n_users, rng_e)
     x0 = sim.simulate_series(users, reps, scen, rng_e)
     onset = sim.draw_onsets(n_users, reps, rng_e)
+    if scen.missing:                                  # drawn after all other random numbers: old data unchanged
+        x0 = sim.apply_missing(x0, users, rng_e)
     g = sim.variability_terciles(x0)
     sd0 = sim.baseline_sd(x0)
-    s0 = dt.Stats(prep(x0))
+    s0 = dt.make_stats(prep(x0), scen)
     boot_rng = np.random.default_rng(BOOT_SEED)
 
     gap_rows, group_rows, diag = [], [], {}
@@ -88,7 +92,7 @@ def run_scenario(scen: sim.Scenario, n_users: int, reps: int, n_boot: int):
             delta = eff * sd0 if conv == "standardised" else np.full(sd0.shape, eff)
             xi = sim.inject(x0, onset, delta)
             diag[(conv, eff)] = group_means(user_means(sim.floor_fraction(x0, onset, delta)), g)
-            si = dt.Stats(prep(xi))
+            si = dt.make_stats(prep(xi), scen)
             for name, (fn, _) in dt.DETECTORS.items():
                 d = dt.delays(fn(si, params[name]), onset, HORIZON)
                 rmd_u = user_means(d.astype(float))
@@ -99,7 +103,12 @@ def run_scenario(scen: sim.Scenario, n_users: int, reps: int, n_boot: int):
                         group_rows.append(dict(scenario=scen.name, detector=name, convention=conv, effect=eff,
                                                group=gname, metric=metric, value=v[g == k].mean()))
                     gap_rows.append(_gap_row(scen, name, conv, eff, metric, v, g, n_boot, boot_rng))
-    info = dict(params=params, pooled=pooled_check, counts=[int((g == k).sum()) for k in range(3)],
+    cover = None
+    if scen.missing:
+        obs_u = user_means((~np.isnan(x0[..., sim.BASE_DAYS:])).mean(-1))
+        dec_u = user_means(s0.can_decide.mean(-1))
+        cover = (group_means(obs_u, g), group_means(dec_u, g))
+    info = dict(params=params, cover=cover, pooled=pooled_check, counts=[int((g == k).sum()) for k in range(3)],
                 floor=diag, seconds=time.time() - t0)
     return gap_rows, group_rows, info
 
@@ -145,6 +154,10 @@ def summary_md(all_gaps, all_groups, infos) -> str:
                 f"Share of post-onset days at the 0 floor, by tercile (low, mid, high), standardised 2 SD: "
                 + ", ".join(f"{v:.3f}" for v in info["floor"][("standardised", 2.0)])
                 + "; absolute 2000: " + ", ".join(f"{v:.3f}" for v in info["floor"][("absolute", 2000.0)]) + ".", ""]
+        if info.get("cover") is not None:
+            out += ["Coverage on evaluation days, by tercile (low, mid, high): share of days observed "
+                    + ", ".join(f"{v:.3f}" for v in info["cover"][0]) + "; share of days on which window detectors can decide "
+                    + ", ".join(f"{v:.3f}" for v in info["cover"][1]) + ".", ""]
         for metric, label in (("alarm_rate", "Alarm episodes per 100 user-days"),
                               ("rmd", "Restricted mean delay (days, censored at 14)"),
                               ("det14", "Detection within 14 days")):

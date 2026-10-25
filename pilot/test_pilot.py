@@ -129,3 +129,56 @@ def test_additive_positive_and_symmetric():
 def test_scenarios_sharing_seed_key_share_data():
     assert sim.SCENARIOS["realistic_log"].seed_key == "realistic"
     assert sim.SCENARIOS["realistic_log"].log_detect and not sim.SCENARIOS["realistic"].log_detect
+
+
+def test_statsnan_equals_stats_without_missing():
+    _, x, _ = _series()
+    a, b = dt.Stats(x), dt.StatsNaN(x)
+    assert np.allclose(a.delta, b.delta) and np.allclose(a.prior_sd, b.prior_sd) and np.allclose(a.u, b.u)
+    for name, (fn, _) in dt.DETECTORS.items():
+        c = {"fixed": 800.0, "zscore": 1.0, "ewma": 1.5, "cusum": 3.0}[name]
+        assert np.array_equal(fn(a, c), fn(b, c))
+
+
+def test_missing_probability_rises_with_sigma_and_no_alarm_on_missing_days():
+    users, x, rng = _series(n=200, reps=4)
+    xm = sim.apply_missing(x, users, rng)
+    miss = np.isnan(xm).mean((1, 2))
+    order = np.argsort(users["sigma"])
+    assert miss[order[-60:]].mean() > miss[order[:60]].mean() + 0.05
+    s = dt.StatsNaN(xm)
+    for name, (fn, _) in dt.DETECTORS.items():
+        c = {"fixed": 300.0, "zscore": 0.3, "ewma": 0.5, "cusum": 0.5}[name]
+        f = fn(s, c)
+        assert not (f & np.isnan(xm[..., sim.BASE_DAYS:])).any()
+        assert f.any()
+
+
+def test_window_detector_abstains_with_too_few_observations():
+    x = np.full((1, 1, sim.N_DAYS), 5000.0)
+    x[..., 60:] = 1000.0
+    x[..., 54:60] = np.nan                    # day 60 + : recent window has <3 observations at some days
+    s = dt.StatsNaN(x)
+    j = 61 - sim.BASE_DAYS                   # day 61: recent days 55..61 -> only 61 and nothing else observed? (55-59 NaN)
+    assert np.isnan(s.delta[0, 0, j])
+    assert not dt.fire_fixed(s, 1.0)[0, 0, j]
+
+
+def test_no_look_ahead_with_missing():
+    users, x, rng = _series(n=20, reps=3)
+    xm = sim.apply_missing(x, users, rng)
+    x2 = xm.copy()
+    x2[..., 70:] = 100.0
+    s1, s2 = dt.StatsNaN(xm), dt.StatsNaN(x2)
+    j = 70 - sim.BASE_DAYS
+    assert np.allclose(s1.delta[..., :j], s2.delta[..., :j], equal_nan=True)
+    assert np.allclose(s1.u[..., :j], s2.u[..., :j], equal_nan=True)
+
+
+def test_short_windows_use_right_days():
+    x = np.zeros((1, 1, sim.N_DAYS))
+    x[..., 40:] = -1.0                        # step at day 40
+    x += np.arange(sim.N_DAYS) * 0.0
+    s = dt.StatsNaN(x, prior_len=7, base_len=7)
+    t = 47                                    # recent 41..47 (all -1), prior 34..40 (6 zeros, one -1)
+    assert np.isclose(s.delta[0, 0, t - sim.BASE_DAYS], -1.0 + 1.0 / 7.0)
