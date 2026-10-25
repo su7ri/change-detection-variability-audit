@@ -72,3 +72,20 @@ Dated, appended after the fact, never edited in place.
   is csv_rais_anonymized/daily_fitbit_sema_df_unprocessed.csv inside it. Version 4 updates the CSV files after a
   bug fix in the export, so only version 4 is used. The record says 71 participants and "more than 4 months";
   the daily table's actual length per user is not known yet and is checked only after this plan is committed.
+- 2026-10-25, after running the plan as frozen (results/lifesnaps_summary.md, results/lifesnaps_gaps.csv; 1000
+  resamples). Eligibility, counted only after the plan was committed: 51 of 71 users eligible in the primary run
+  (17 per tercile, fewer than the 24 hoped for), 53 in the sensitivity run (0 steps kept). Above the stop rule of 45.
+  - Primary run: 28 of 35 cells consistent with the simulator's `missing` scenario; same sign as the simulator in
+    34 of 35; 11 of 35 cells informative (interval does not contain both the simulated gap and zero).
+    Sensitivity run: 28 of 35 consistent, 12 of 35 informative. The two runs agree.
+  - Not consistent: the fixed threshold and the lambda = 0 detector (same rule), where the real gaps are much smaller
+    than simulated (alarm rate +0.84 vs +3.13 per 100 user-days) and their intervals include 0; and CUSUM alarm rate,
+    where the real gap is larger than simulated (-3.33 vs -1.02). CUSUM also shows REAL gaps on delay and detection
+    in the same direction as the simulator (high-variability users: fewer alarms, later detection).
+  - Confounds as reported: the high-variability tercile has a lower median step count (6,292 vs 8,726) and more days
+    without a row (0.175 vs 0.139); Spearman(log-SD, median steps) = -0.33. Variability is not separated from level
+    or wear time here, and no cause is claimed. In the simulator the CUSUM gap was a skewness effect of raw steps; the
+    real series are skewed too, but a log-scale CUSUM was not part of this plan and has not been run. Any such run
+    would be a post-hoc, exploratory amendment.
+  - Reading: the real data are compatible with the simulated pattern, but 17 users per tercile cannot decide H2;
+    the check does not rule out a CUSUM-specific gap in real data.
