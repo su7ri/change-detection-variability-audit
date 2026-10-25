@@ -182,3 +182,20 @@ def test_short_windows_use_right_days():
     s = dt.StatsNaN(x, prior_len=7, base_len=7)
     t = 47                                    # recent 41..47 (all -1), prior 34..40 (6 zeros, one -1)
     assert np.isclose(s.delta[0, 0, t - sim.BASE_DAYS], -1.0 + 1.0 / 7.0)
+
+
+def test_shrunk_lambda_endpoints():
+    _, x, _ = _series()
+    s = dt.StatsNaN(x, with_mad=True)
+    pop = float(np.median(s.prior_sd))
+    assert np.array_equal(dt.fire_shrunk(s, 0.5, 1.0, pop), dt.fire_zscore(s, 0.5))
+    assert np.array_equal(dt.fire_shrunk(s, 0.5, 0.0, pop), s.delta / pop <= -0.5)
+    assert (s.prior_mad > 0).all()
+
+
+def test_calibrate_fn_hits_target():
+    _, x, _ = _series(n=100, reps=6)
+    s = dt.StatsNaN(x, with_mad=True)
+    pop = float(np.median(s.prior_sd))
+    c = dt.calibrate_fn(lambda st, k: dt.fire_shrunk(st, k, 0.5, pop), s, 3.33)
+    assert abs(dt.alarm_rate(dt.fire_shrunk(s, c, 0.5, pop)) - 3.33) < 0.15

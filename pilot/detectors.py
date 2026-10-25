@@ -39,7 +39,7 @@ class StatsNaN:
     at least 3 observations and the prior window at least half of its days (and at least 4); it also
     abstains on a day without an observation. EWMA/CUSUM need at least half of the baseline observed."""
 
-    def __init__(self, x: np.ndarray, prior_len: int = 21, base_len: int = 28):
+    def __init__(self, x: np.ndarray, prior_len: int = 21, base_len: int = 28, with_mad: bool = False):
         days = np.arange(sim.BASE_DAYS, x.shape[-1])
         obs = ~np.isnan(x)
         xz = np.where(obs, x, 0.0)
@@ -62,6 +62,12 @@ class StatsNaN:
         self.delta = np.where(ok, mr - mp, np.nan)
         self.prior_sd = np.maximum(np.sqrt(vp), 1e-9)
         self.can_decide = ok                             # coverage of the window detectors
+        self.prior_mad = None
+        if with_mad:                                     # robust scale of the prior window: 1.4826 x MAD
+            pw = swv(x, prior_len, axis=-1)[..., pi, :]
+            with np.errstate(all="ignore"):
+                med = np.nanmedian(pw, axis=-1, keepdims=True)
+                self.prior_mad = np.maximum(1.4826 * np.nanmedian(np.abs(pw - med), axis=-1), 1e-9)
 
         b = x[..., :base_len]
         nb = (~np.isnan(b)).sum(-1, keepdims=True)
@@ -162,3 +168,20 @@ def delays(fires: np.ndarray, onset: np.ndarray, horizon: int = 14) -> np.ndarra
     any_hit = hit.any(-1)
     first = hit.argmax(-1) - (onset - sim.BASE_DAYS)
     return np.where(any_hit, first, horizon)
+
+
+def fire_shrunk(s, c: float, lam: float, pop: float, kind: str = "sd") -> np.ndarray:
+    """Window detector with scale = lam * own + (1 - lam) * pop (own = prior-window SD or robust MAD scale)."""
+    own = s.prior_sd if kind == "sd" else s.prior_mad
+    return s.delta / (lam * own + (1.0 - lam) * pop) <= -c
+
+
+def calibrate_fn(fn, s_cal, target: float, lo: float = 0.0, hi: float = 40.0, iters: int = 40) -> float:
+    """Bisection for any detector fn(stats, constant); the alarm rate falls as the constant grows."""
+    for _ in range(iters):
+        mid = 0.5 * (lo + hi)
+        if alarm_rate(fn(s_cal, mid)) > target:
+            lo = mid
+        else:
+            hi = mid
+    return 0.5 * (lo + hi)

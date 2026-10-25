@@ -104,3 +104,40 @@ Dated, appended after the fact, never edited in place.
     Reported as a knife-edge cell of a known artefact, not as support for H2.
   - Missing days do reduce coverage for high-variability users (observed days 0.90 / 0.87 / 0.83 by tercile;
     window detectors can decide on 0.90 / 0.87 / 0.82 of days). That is a coverage gap, not a detection gap.
+- 2026-10-25, written BEFORE running the experiment below (trade-off between the two equality conventions;
+  this is the planned mitigation, run as a separate experiment).
+  - Detector family, one window detector with a shrunk scale: alarm if delta / s <= -c, where
+    s = lambda x s_own + (1 - lambda) x s_pop. delta, the 7-vs-prior-window difference, and the abstention rules
+    are the same as for the z-score detector. s_own is the scale of the user's own prior window; s_pop is one
+    constant for everyone: the median of that same scale over all windows of the calibration set (different seed).
+    lambda = 0 is a fixed threshold in steps (up to rescaling); lambda = 1 is the personal z-score.
+  - lambda in {0, 0.25, 0.5, 0.75, 1}. Two scale types: `sd` (standard deviation) and `mad` (1.4826 x median
+    absolute deviation), the robust variant. Nothing else is tuned. For each lambda, c is re-tuned on the
+    calibration set to 3.33 alarm episodes per 100 user-days, as for the other detectors.
+  - Scenarios (same simulated data as `realistic`): `realistic`, `short7`, `missing`.
+  - Metrics, same definitions and margins as before. Two conventions: standardised k = 1 and absolute 1000 steps.
+    Reported per lambda: alarm-rate gap (un-injected), and RMD and detection within 14 days gaps (high minus low
+    tercile) under each convention, with the bootstrap intervals (1000 resamples) and verdicts.
+  - Question: is there a trade-off, i.e. no lambda that makes both conventions equal?
+  - Pre-set criterion for "trade-off confirmed" in `realistic`, `sd` type, on RMD:
+    (|absolute gap at lambda = 1| - |absolute gap at lambda = 0|) > 1.5 days AND
+    (|standardised gap at lambda = 0| - |standardised gap at lambda = 1|) > 1.5 days.
+    If only one holds, or neither, it is reported as "no trade-off in this range". If it holds, the lambda
+    values at which the absolute gap and the standardised gap are each within the margin are reported
+    (possibly none).
+  - The result is reported whatever it shows. Part of a trade-off is expected from the algebra (a fixed shift in
+    steps is a different multiple of different users' SDs); the contribution is its size and shape, and how the
+    robust scale and the missing/short-baseline scenarios change it.
+- 2026-10-25, after running the trade-off experiment (results/tradeoff_summary.md, 1000 resamples).
+  - Pre-set criterion NOT met in `realistic` (sd type): the absolute-convention RMD gap does not grow in
+    magnitude from lambda 0 to 1 (|-2.86| at 0, |+2.27| at 1; change -0.59 days, needed > +1.5); it changes sign.
+    The standardised-convention gap does shrink (3.37 -> 0.34, change +3.04). Reported as "no trade-off in the
+    sense of the criterion".
+  - What the data show instead: a crossing. At lambda 0 high-variability users are detected faster but get more
+    alarms; at lambda 1 they are detected later (absolute convention). Delay gaps are within or near the margin
+    around lambda 0.5 to 0.75 (sd, realistic: standardised -1.44 / -0.49, absolute +0.06 / +1.33; mad at 0.75:
+    -1.10 / +0.31). The alarm-rate gap falls from +3.3 to -0.2 (sd) with lambda, so it needs lambda near 0.75 or
+    higher. Same pattern in `short7` and `missing`. The robust (mad) scale narrows the delay gap but leaves a larger
+    alarm-rate gap at the same lambda (realistic, lambda 1: +0.72 vs -0.21).
+  - Caveat: this is the same simulator and the same assumptions; the lambda that balances the gaps is specific to
+    this variability distribution and not a recommendation for real data.
