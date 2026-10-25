@@ -64,4 +64,13 @@ A detector "shows no meaningful gap" if the whole interval lies inside plus/minu
   "the gap is a convention choice" and its value is reassessed before real data are touched.
 
 ## Amendments
-(none)
+Dated, appended after the fact, never edited in place.
+
+- 2026-10-25, after the first pilot run: the margins above were confirmed by Soroush as proposed.
+- 2026-10-25, after the first pilot run (exploratory, post hoc): two diagnostic scenarios were added because
+  the CUSUM alarm-rate gap in `realistic` could be a side effect of the log-normal model, where variability
+  and skewness grow together.
+  - `realistic_log`: the same simulated data as `realistic`; detectors run on log(steps).
+  - `symmetric`: noise added on the raw scale, relative SD capped at 0.45, values floored at 5% of the user's level.
+  The `ideal` and `realistic` results are unchanged (checked: identical output). The decision rule is
+  unchanged and still applies to `realistic`; the diagnostics only help explain it.

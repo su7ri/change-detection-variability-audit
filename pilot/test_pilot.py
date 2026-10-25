@@ -110,3 +110,22 @@ def test_verdict_rules():
     assert pilot.verdict(r) == "none"
     r = dict(metric="alarm_rate", gap_high_minus_low=0.5, gap_lo=-0.8, gap_hi=1.8)
     assert pilot.verdict(r) == "unclear"
+
+
+def test_additive_positive_and_symmetric():
+    rng = np.random.default_rng(21)
+    users = sim.make_users(60, rng)
+    x = sim.simulate_series(users, 6, sim.SYMMETRIC, rng)
+    assert (x > 0).all()
+    z = (x - x.mean(-1, keepdims=True)) / x.std(-1, keepdims=True)
+    skew = (z ** 3).mean()
+    rng = np.random.default_rng(21)
+    users = sim.make_users(60, rng)
+    xl = sim.simulate_series(users, 6, sim.REALISTIC, rng)
+    zl = (xl - xl.mean(-1, keepdims=True)) / xl.std(-1, keepdims=True)
+    assert abs(skew) < 0.5 * abs((zl ** 3).mean())     # additive noise is much less skewed than log-normal
+
+
+def test_scenarios_sharing_seed_key_share_data():
+    assert sim.SCENARIOS["realistic_log"].seed_key == "realistic"
+    assert sim.SCENARIOS["realistic_log"].log_detect and not sim.SCENARIOS["realistic"].log_detect

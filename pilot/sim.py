@@ -26,17 +26,27 @@ BURN_IN = 20
 T_DF = 4                                # Student-t degrees of freedom (heavy tails)
 
 
+ADDITIVE_SIGMA_CAP = 0.45     # additive scenario: cap on the relative noise SD, to limit truncation at zero
+ADDITIVE_FLOOR = 0.05         # additive scenario: values never fall below 5% of the user's level
+
+
 @dataclass(frozen=True)
 class Scenario:
     name: str
     heavy_tails: bool
     weekly: bool
     autocorr: bool
+    additive: bool = False      # noise added on the raw scale (symmetric) instead of the log scale (skewed)
+    log_detect: bool = False    # detectors run on log(steps) instead of steps
+    seed_key: str = ""          # scenarios with the same seed_key get identical simulated data
 
 
 IDEAL = Scenario("ideal", heavy_tails=False, weekly=False, autocorr=False)
 REALISTIC = Scenario("realistic", heavy_tails=True, weekly=True, autocorr=True)
-SCENARIOS = {s.name: s for s in (IDEAL, REALISTIC)}
+# Diagnostics for the skewness confound (variability and skewness both grow with sigma in the log-normal model):
+REALISTIC_LOG = Scenario("realistic_log", True, True, True, log_detect=True, seed_key="realistic")
+SYMMETRIC = Scenario("symmetric", True, True, True, additive=True)
+SCENARIOS = {s.name: s for s in (IDEAL, REALISTIC, REALISTIC_LOG, SYMMETRIC)}
 
 
 def make_users(n: int, rng: np.random.Generator) -> dict:
@@ -68,11 +78,15 @@ def simulate_series(users: dict, reps: int, scen: Scenario, rng: np.random.Gener
         eps[..., t] = phi * eps[..., t - 1] + innov * sigma * z[..., t]
     eps = eps[..., BURN_IN:]
 
-    y = np.log(users["mu"])[:, None, None] + eps
+    weekly = 0.0
     if scen.weekly:
         dow = np.arange(N_DAYS)[None, None, :] + rng.integers(0, 7, size=(n, reps, 1))
-        y = y + users["amp"][:, None, None] * np.cos(2.0 * np.pi * (dow - users["phase"][:, None, None]) / 7.0)
-    return np.exp(y)
+        weekly = users["amp"][:, None, None] * np.cos(2.0 * np.pi * (dow - users["phase"][:, None, None]) / 7.0)
+    if scen.additive:
+        scale = (np.minimum(users["sigma"], ADDITIVE_SIGMA_CAP) / users["sigma"])[:, None, None]
+        rel = 1.0 + eps * scale + weekly
+        return users["mu"][:, None, None] * np.maximum(rel, ADDITIVE_FLOOR)
+    return np.exp(np.log(users["mu"])[:, None, None] + eps + weekly)
 
 
 def draw_onsets(n: int, reps: int, rng: np.random.Generator) -> np.ndarray:
