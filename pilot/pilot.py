@@ -50,22 +50,23 @@ def boot_gaps(v: np.ndarray, g: np.ndarray, n_boot: int, rng: np.random.Generato
     return (gap, *np.percentile(reps_gap, [2.5, 97.5]), mm, *np.percentile(reps_mm, [2.5, 97.5]))
 
 
-def run_scenario(scen: sim.Scenario, n_users: int, reps: int, n_boot: int):
+def run_scenario(scen: sim.Scenario, n_users: int, reps: int, n_boot: int, target: float = TARGET_RATE,
+                 cal_seed: int = CAL_SEED, eval_seed: int = EVAL_SEED):
     t0 = time.time()
     key = zlib.crc32((scen.seed_key or scen.name).encode()) % 1000      # same data for scenarios sharing a seed_key
     prep = (lambda a: np.log(np.maximum(a, 1.0))) if scen.log_detect else (lambda a: a)
     # 1. calibration set (different seed): one tuning constant per detector
-    rng_c = np.random.default_rng([CAL_SEED, key])
-    users_c = sim.make_users(n_users, rng_c)
+    rng_c = np.random.default_rng([cal_seed, key])
+    users_c = sim.make_users(n_users, rng_c, **scen.user_kwargs())
     x_c = sim.simulate_series(users_c, max(reps // 2, 5), scen, rng_c)
     if scen.missing:
         x_c = sim.apply_missing(x_c, users_c, rng_c)
     s_c = dt.make_stats(prep(x_c), scen)
-    params = {name: dt.calibrate(name, s_c, TARGET_RATE) for name in dt.DETECTORS}
+    params = {name: dt.calibrate(name, s_c, target) for name in dt.DETECTORS}
 
     # 2. evaluation set
-    rng_e = np.random.default_rng([EVAL_SEED, key])
-    users = sim.make_users(n_users, rng_e)
+    rng_e = np.random.default_rng([eval_seed, key])
+    users = sim.make_users(n_users, rng_e, **scen.user_kwargs())
     x0 = sim.simulate_series(users, reps, scen, rng_e)
     onset = sim.draw_onsets(n_users, reps, rng_e)
     if scen.missing:                                  # drawn after all other random numbers: old data unchanged
@@ -90,7 +91,7 @@ def run_scenario(scen: sim.Scenario, n_users: int, reps: int, n_boot: int):
     for conv, effects in (("standardised", SD_EFFECTS), ("absolute", ABS_EFFECTS)):
         for eff in effects:
             delta = eff * sd0 if conv == "standardised" else np.full(sd0.shape, eff)
-            xi = sim.inject(x0, onset, delta)
+            xi = sim.inject(x0, onset, delta, scen.ramp_days)
             diag[(conv, eff)] = group_means(user_means(sim.floor_fraction(x0, onset, delta)), g)
             si = dt.make_stats(prep(xi), scen)
             for name, (fn, _) in dt.DETECTORS.items():

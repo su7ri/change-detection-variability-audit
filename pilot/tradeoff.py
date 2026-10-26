@@ -22,10 +22,11 @@ SCENARIO_NAMES = ("realistic", "short7", "missing")
 CONVENTIONS = (("standardised", 1.0), ("absolute", 1000.0))
 
 
-def run(scen: sim.Scenario, n_users: int, reps: int, n_boot: int):
+def run(scen: sim.Scenario, n_users: int, reps: int, n_boot: int, target: float = pilot.TARGET_RATE,
+        cal_seed: int = pilot.CAL_SEED, eval_seed: int = pilot.EVAL_SEED, kinds: tuple = KINDS):
     key = zlib.crc32((scen.seed_key or scen.name).encode()) % 1000
-    rng_c = np.random.default_rng([pilot.CAL_SEED, key])
-    users_c = sim.make_users(n_users, rng_c)
+    rng_c = np.random.default_rng([cal_seed, key])
+    users_c = sim.make_users(n_users, rng_c, **scen.user_kwargs())
     x_c = sim.simulate_series(users_c, max(reps // 2, 5), scen, rng_c)
     if scen.missing:
         x_c = sim.apply_missing(x_c, users_c, rng_c)
@@ -33,8 +34,8 @@ def run(scen: sim.Scenario, n_users: int, reps: int, n_boot: int):
     pop = {"sd": float(np.nanmedian(s_c.prior_sd[s_c.can_decide])),
            "mad": float(np.nanmedian(s_c.prior_mad[s_c.can_decide]))}
 
-    rng_e = np.random.default_rng([pilot.EVAL_SEED, key])
-    users = sim.make_users(n_users, rng_e)
+    rng_e = np.random.default_rng([eval_seed, key])
+    users = sim.make_users(n_users, rng_e, **scen.user_kwargs())
     x0 = sim.simulate_series(users, reps, scen, rng_e)
     onset = sim.draw_onsets(n_users, reps, rng_e)
     if scen.missing:
@@ -46,13 +47,13 @@ def run(scen: sim.Scenario, n_users: int, reps: int, n_boot: int):
     inj = {}
     for conv, eff in CONVENTIONS:
         delta = eff * sd0 if conv == "standardised" else np.full(sd0.shape, eff)
-        inj[conv] = dt.StatsNaN(sim.inject(x0, onset, delta), scen.prior_len, scen.base_len, with_mad=True)
+        inj[conv] = dt.StatsNaN(sim.inject(x0, onset, delta, scen.ramp_days), scen.prior_len, scen.base_len, with_mad=True)
 
     rows, info = [], {"pop": pop, "tuned": {}, "pooled": {}}
-    for kind in KINDS:
+    for kind in kinds:
         for lam in LAMBDAS:
             fn = lambda s, c, lam=lam, kind=kind: dt.fire_shrunk(s, c, lam, pop[kind], kind)
-            c = dt.calibrate_fn(fn, s_c, pilot.TARGET_RATE)
+            c = dt.calibrate_fn(fn, s_c, target)
             info["tuned"][(kind, lam)] = c
             ev = dt.merge_events(fn(s0, c))
             info["pooled"][(kind, lam)] = ev.sum() / ev.size * 100.0

@@ -170,3 +170,62 @@ Dated, appended after the fact, never edited in place.
     gap seen in LifeSnaps (real -3.15 / -2.34 against simulated -0.5). The drift guess is not supported as the
     explanation; the real-data gap stays unexplained. Other candidates (changes that are real and not injected,
     wear-time and routine effects tied to variability, small-sample noise with 17 users per tercile) are untested.
+- 2026-10-26, written BEFORE running the experiment below (sensitivity analysis, prompted by a critical review
+  of the two-page summary). Question: do the pilot's two main patterns survive when one assumption of the simulator
+  is changed at a time? Base = `realistic` (300 users, 20 replicates, target 3.33, calibration seed 101,
+  evaluation seed 202). Each variant changes ONE factor; everything else stays at the base value.
+  - Variants (2 levels per factor, plus the base for reference):
+    1. alarm-rate target: 1.5 and 6.0 episodes per 100 user-days;
+    2. calibration seed: 303 and 404 (the evaluation data stay the same);
+    3. evaluation seed: 505 and 606 (new simulated users and noise, same calibration set rule);
+    4. number of users: 600 (replicates 20);
+    5. autocorrelation: none (phi = 0) and strong (phi ~ U(0.3, 0.8));
+    6. spread of variability across users: log-SD of sigma 0.20 (narrow) and 0.55 (wide);
+    7. tails of the noise: Gaussian and Student-t with 3 degrees of freedom (base 4);
+    8. level-variability correlation: correlation of log level with log sigma of -0.4 and +0.4 (base 0;
+       LifeSnaps showed about -0.33 between variability and median steps);
+    9. shape of the change: a ramp that grows linearly from 0 at onset to the full shift on day 14
+       (delay is still counted from onset, censored at 14 days).
+  - Detectors, metrics, margins, bootstrap (1000 resamples), and tuning rule are unchanged. The shrunk-scale
+    detector uses the SD scale and lambda in {0, 0.25, 0.5, 0.75, 1}. Conventions: standardised 1 SD and
+    absolute 1000 steps.
+  - Robustness criteria, fixed now (all on point estimates and the pre-set verdicts):
+    R1. Personal detectors (z-score, EWMA, CUSUM), standardised k = 1: no REAL gap in restricted mean delay or in
+        detection within 14 days.
+    R2. Crossing: alarm-rate gap at lambda 0 above +1.0 and at lambda 1 below +1.0; and absolute-convention delay gap
+        at most -1.5 days at lambda 0 and at least +1.5 days at lambda 1.
+    R3. A balanced lambda exists: some lambda in the grid whose alarm-rate gap is within +/-1.0 per 100 user-days and
+        whose two delay gaps (standardised 1 SD and absolute 1000 steps) are both within +/-1.5 days.
+  - A claim is called robust if its criterion holds in every variant, mostly robust if it holds in at least 80% of
+    the variants, and sensitive otherwise. The paper states each claim at the strength found, and names the factor
+    that breaks it.
+  - Exploratory question, no decision rule: does any variant (especially level-variability correlation or the ramp)
+    produce a CUSUM alarm-rate gap of about -2 or lower (the real data gave -3.3), on raw steps?
+  - The results are reported whatever they show, including variants where R1 to R3 fail.
+- 2026-10-26, results of the sensitivity analysis above (results/sensitivity_*.csv, sensitivity_summary.md; 17 variants,
+  1000 resamples). Old outputs (8 scenarios, trade-off, drift) were re-run after the code change and are byte-identical.
+  - R1 (personal detectors, no real delay or detection gap at 1 SD): holds in 16 of 16 variants, **robust**. All 102 cells
+    (3 detectors x 2 metrics x 17 variants) have verdict "none". The largest point estimate is +0.76 days (CUSUM, wide
+    variability spread), inside the 1.5-day margin.
+  - R2 (the crossing): holds in 13 of 16 variants, **mostly robust**. Fails in `target_6.0` (absolute delay gap at lambda 0
+    is -0.86 days; at lambda 1 +1.47, just under 1.5), `spread_narrow` (-1.33 / +1.04) and `ramp14` (lambda 1: +1.21).
+    The signs of the four quantities (alarm gap at lambda 0 positive, delay gaps at lambda 0 negative and at lambda 1 positive
+    in both conventions) are the same in all 17 variants except one near-zero value (standardised delay gap at lambda 1 in
+    `phi_strong`, -0.06); only the size falls below the pre-set margins. The size grows with the spread of variability
+    (alarm gap at lambda 0: +1.69 narrow, +3.33 base, +4.93 wide).
+  - R3 (a balanced lambda exists): holds in 13 of 16 variants, **mostly robust**, but only just. In the base case lambda 0.75
+    sits at 0.89 of the tightest margin. It fails in `evalseed_606` (absolute delay gap +1.505 against 1.5, a miss of 0.005
+    days), `spread_wide` (alarm +1.25, absolute delay +1.91) and `corr_pos` (alarm +1.14, absolute delay +1.75). The best
+    lambda on the grid is 0.75 in all 17 variants, and there all three gaps stay within 1.27 times the margins (descriptive,
+    chosen after the run, not a pre-set criterion).
+  - Exploratory question (CUSUM alarm-rate gap of about -2 or lower on raw steps): no variant gets there; the most negative
+    is `spread_wide` (-1.52); base -0.99. The real LifeSnaps gap (-3.3) remains unexplained by anything in this simulator.
+  - Two facts about the design of the variants that limit what they show: (1) the personal detectors are scale-free in the
+    multiplicative model, so the level-variability correlation leaves their results identical to the base case (only the
+    fixed threshold and the absolute convention change); the correlation variants therefore do not test the personal
+    detectors; (2) the ramp does not change alarm rates (they are measured on series without a change), only delays.
+  - Reading: the audit finding (personal detectors have no gap in delay or detection beyond the margins) is robust in
+    this simulator. The trade-off has the same direction everywhere but its size depends on how spread out the users'
+    variability is. A single balanced lambda is not a stable result: it sits near the margins and moves with the data.
+    Seed-to-seed variation of point estimates is about 0.3 to 0.4 days for the delay gaps at lambda 1 (2.27, 1.96, 2.76
+    for evaluation seeds 202, 505, 606).

@@ -216,3 +216,71 @@ def test_drift_zero_unchanged_and_drift_size():
 def test_drift_scenarios_registered_and_old_unchanged():
     assert set(sim.DRIFT_SCENARIOS) == {"drift_small", "drift", "drift_large", "drift_log"}
     assert all(s.drift_sd == 0 for s in sim.SCENARIOS.values())
+
+
+def test_make_users_defaults_reproduce_original_draws():
+    a = sim.make_users(50, np.random.default_rng(9))
+    b = sim.make_users(50, np.random.default_rng(9), sigma_sd=0.35, phi_range=(0.0, 0.5), corr=0.0)
+    for k in a:
+        assert np.array_equal(a[k], b[k])
+    rng = np.random.default_rng(9)           # original recipe, written out
+    mu = np.exp(rng.normal(np.log(7000.0), 0.35, 50))
+    assert np.array_equal(mu, a["mu"])
+
+
+def test_make_users_options():
+    n = 20000
+    u = sim.make_users(n, np.random.default_rng(2), corr=-0.4)
+    r = np.corrcoef(np.log(u["mu"]), np.log(u["sigma"]))[0, 1]
+    assert -0.45 < r < -0.35
+    assert abs(np.log(u["mu"]).std() - 0.35) < 0.01          # marginal level spread unchanged
+    w = sim.make_users(n, np.random.default_rng(2), sigma_sd=0.55, phi_range=(0.3, 0.8))
+    assert w["phi"].min() >= 0.3 and w["phi"].max() <= 0.8
+    assert np.log(w["sigma"][(w["sigma"] > 0.101) & (w["sigma"] < 0.899)]).std() > 0.4
+
+
+def test_ramp_inject():
+    x = np.full((1, 1, 30), 100.0)
+    onset = np.array([[10]])
+    delta = np.array([[40.0]])
+    abrupt = sim.inject(x, onset, delta)[0, 0]
+    ramp = sim.inject(x, onset, delta, ramp_days=4)[0, 0]
+    assert (abrupt[:10] == 100).all() and (abrupt[10:] == 60).all()
+    assert (ramp[:10] == 100).all()
+    assert np.allclose(ramp[10:14], [90, 80, 70, 60]) and (ramp[14:] == 60).all()
+    assert np.array_equal(sim.inject(x, onset, delta, ramp_days=0), sim.inject(x, onset, delta))
+
+
+def test_scenario_tail_options():
+    gauss = sim.Scenario("g", heavy_tails=False, weekly=False, autocorr=False)
+    t3 = sim.Scenario("t3", heavy_tails=True, weekly=False, autocorr=False, t_df=3)
+    rng = np.random.default_rng(4)
+    users = sim.make_users(200, rng)
+    xg = sim.simulate_series(users, 20, gauss, np.random.default_rng(5))
+    xt = sim.simulate_series(users, 20, t3, np.random.default_rng(5))
+    zg, zt = np.log(xg), np.log(xt)
+    kurt = lambda z: ((z - z.mean(-1, keepdims=True)) ** 4).mean() / (z.var(-1) ** 2).mean()
+    assert kurt(zt) > kurt(zg)
+
+
+def test_sensitivity_criteria_on_fake_rows():
+    import sensitivity as sv
+    def row(**kw):
+        d = dict(detector="x", convention="none", effect=0.0, metric="alarm_rate", gap_high_minus_low=0.0,
+                 gap_lo=-0.1, gap_hi=0.1, verdict="none")
+        d.update(kw)
+        return d
+    gaps = [row(detector=d, convention="standardised", effect=1.0, metric=m) for d in sv.ZSC for m in ("rmd", "det14")]
+    gaps.append(row(detector="cusum", convention="none", metric="alarm_rate", gap_high_minus_low=-2.5))
+    tr = []
+    for lam in (0.0, 0.25, 0.5, 0.75, 1.0):
+        a = {0.0: 3.0, 0.25: 2.0, 0.5: 0.8, 0.75: 0.2, 1.0: -0.3}[lam]
+        d = {0.0: -3.0, 0.25: -2.0, 0.5: -0.8, 0.75: 0.4, 1.0: 2.0}[lam]
+        tr += [row(**{"lambda": lam}, metric="alarm_rate", gap_high_minus_low=a),
+               row(**{"lambda": lam}, convention="standardised", metric="rmd", gap_high_minus_low=-d / 2),
+               row(**{"lambda": lam}, convention="absolute", metric="rmd", gap_high_minus_low=d)]
+    c = sv.criteria(gaps, tr)
+    assert c["R1"] and c["R2"] and c["R3"] and c["balanced"] == [0.5, 0.75]
+    gaps[0]["verdict"] = "REAL"
+    assert not sv.criteria(gaps, tr)["R1"]
+    assert sv.label(16, 16) == "robust" and sv.label(13, 16) == "mostly robust" and sv.label(12, 16) == "sensitive"

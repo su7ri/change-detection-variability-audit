@@ -43,6 +43,14 @@ class Scenario:
     prior_len: int = 21         # window detectors: days in the prior window
     base_len: int = 28          # EWMA/CUSUM: days in the fixed baseline
     drift_sd: float = 0.0       # SD of the log-scale drift reached at the last day (0 = no drift)
+    t_df: int = T_DF            # Student-t degrees of freedom when heavy_tails
+    phi_range: tuple = (0.0, 0.5)   # autocorrelation range across users
+    sigma_sd: float = 0.35      # log-SD of sigma across users
+    level_corr: float = 0.0     # correlation of log level with log sigma across users
+    ramp_days: int = 0          # 0 = abrupt shift; k = linear ramp to the full shift over k days
+
+    def user_kwargs(self) -> dict:
+        return dict(sigma_sd=self.sigma_sd, phi_range=self.phi_range, corr=self.level_corr)
 
 
 IDEAL = Scenario("ideal", heavy_tails=False, weekly=False, autocorr=False)
@@ -69,12 +77,20 @@ ALL_SCENARIOS = {**SCENARIOS, **DRIFT_SCENARIOS}
 P_MISS_MIN, P_MISS_SPAN = 0.05, 0.30     # missing probability = 0.05 + 0.30 * (sigma - 0.10) / 0.80
 
 
-def make_users(n: int, rng: np.random.Generator) -> dict:
-    """Between-user heterogeneity. sigma is the SD of daily log-steps: continuous across users."""
+def make_users(n: int, rng: np.random.Generator, sigma_sd: float = 0.35, phi_range: tuple = (0.0, 0.5),
+               corr: float = 0.0) -> dict:
+    """Between-user heterogeneity. sigma is the SD of daily log-steps: continuous across users.
+    Defaults reproduce the original draws exactly."""
+    mu_n = rng.normal(np.log(7000.0), 0.35, n)
+    sig_n = rng.normal(np.log(0.30), sigma_sd, n)
+    if corr != 0.0:                                   # induce correlation of log level with log sigma
+        zs = (sig_n - np.log(0.30)) / sigma_sd
+        zm = (mu_n - np.log(7000.0)) / 0.35
+        mu_n = np.log(7000.0) + 0.35 * (corr * zs + np.sqrt(1.0 - corr ** 2) * zm)
     return dict(
-        mu=np.exp(rng.normal(np.log(7000.0), 0.35, n)),
-        sigma=np.clip(np.exp(rng.normal(np.log(0.30), 0.35, n)), 0.10, 0.90),
-        phi=rng.uniform(0.0, 0.5, n),
+        mu=np.exp(mu_n),
+        sigma=np.clip(np.exp(sig_n), 0.10, 0.90),
+        phi=rng.uniform(phi_range[0], phi_range[1], n),
         amp=rng.uniform(0.0, 0.2, n),
         phase=rng.uniform(0.0, 7.0, n),
     )
@@ -86,7 +102,7 @@ def simulate_series(users: dict, reps: int, scen: Scenario, rng: np.random.Gener
     total = N_DAYS + BURN_IN
     shape = (n, reps, total)
     if scen.heavy_tails:
-        z = rng.standard_t(T_DF, size=shape) / np.sqrt(T_DF / (T_DF - 2.0))
+        z = rng.standard_t(scen.t_df, size=shape) / np.sqrt(scen.t_df / (scen.t_df - 2.0))
     else:
         z = rng.standard_normal(shape)
     phi = (users["phi"] if scen.autocorr else np.zeros(n))[:, None]
@@ -133,11 +149,15 @@ def baseline_sd(x: np.ndarray) -> np.ndarray:
     return _std(x[..., :BASE_DAYS])
 
 
-def inject(x: np.ndarray, onset: np.ndarray, delta: np.ndarray) -> np.ndarray:
-    """Subtract `delta` steps from `onset` to the end, floored at 0. delta, onset: (n, reps)."""
+def inject(x: np.ndarray, onset: np.ndarray, delta: np.ndarray, ramp_days: int = 0) -> np.ndarray:
+    """Subtract `delta` steps from `onset` to the end, floored at 0. delta, onset: (n, reps).
+    ramp_days > 0: the shift grows linearly from delta/ramp_days on the onset day to the full delta on day ramp_days."""
     t = np.arange(x.shape[-1])[None, None, :]
     after = t >= onset[..., None]
-    return np.where(after, np.maximum(0.0, x - delta[..., None]), x)
+    shift = delta[..., None]
+    if ramp_days > 0:
+        shift = shift * np.clip((t - onset[..., None] + 1.0) / ramp_days, 0.0, 1.0)
+    return np.where(after, np.maximum(0.0, x - shift), x)
 
 
 def floor_fraction(x: np.ndarray, onset: np.ndarray, delta: np.ndarray) -> np.ndarray:
