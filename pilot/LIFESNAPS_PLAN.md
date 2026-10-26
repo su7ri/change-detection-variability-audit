@@ -89,3 +89,29 @@ Dated, appended after the fact, never edited in place.
     would be a post-hoc, exploratory amendment.
   - Reading: the real data are compatible with the simulated pattern, but 17 users per tercile cannot decide H2;
     the check does not rule out a CUSUM-specific gap in real data.
+- 2026-10-26, written BEFORE running the extra check below. EXPLORATORY and POST HOC: it was chosen after seeing
+  the primary results, because CUSUM was the one detector with real-data gaps and in the simulator its gap came from
+  the skewness of raw steps. It does not replace the primary analysis and does not enter the decision about H2.
+  - Same users, groups, onsets (seed 11), injections (on raw steps), tuning rule, metrics and bootstrap as the
+    primary run (0-step days not observed). The only change: every detector runs on log(steps) (observed values
+    clipped below at 1) instead of raw steps; the standardised shift is still 1 x the raw baseline SD and the
+    absolute shift 1000 steps, injected before the log transform, as in the simulator's `realistic_log`.
+  - Comparison: the simulator's `realistic_log` gaps (results/pilot_gaps.csv). The shrunk-scale detector is not
+    compared (it was not simulated on the log scale); its rows are reported without a simulated reference.
+  - Reading rule, fixed now: if CUSUM's real-data alarm-rate gap shrinks to inside the margin (|gap| < 1.0) on the
+    log scale, the raw-scale CUSUM gap is called a skewness effect, as in the simulator. If it stays beyond the margin
+    with an interval that excludes 0, it is reported as unexplained by skewness and as a real-data finding to be checked
+    on more users.
+- 2026-10-26, after the exploratory log-scale run (results/lifesnaps_log_summary.md, results/lifesnaps_log_gaps.csv;
+  the primary results were re-run and are unchanged). In the file the column named "simulator gap (missing)" holds the
+  simulator's `realistic_log` gap in this run.
+  - By the reading rule fixed above, CUSUM's alarm-rate gap is NOT explained by skewness: on the log scale it stays
+    at -3.15 [-4.70, -1.55] per 100 user-days (the simulator's log-scale value is -0.11). EWMA's alarm-rate gap also
+    appears on the log scale (-2.34 [-3.90, -0.72]; simulator -0.10). The z-score window detector shows none (-0.43).
+  - The REAL delay and detection gaps that CUSUM showed on raw steps disappear on the log scale (for example
+    standardised RMD -1.05 [-2.50, +0.36]); the fixed threshold keeps large gaps, as expected.
+  - Possible explanation, NOT tested: EWMA and CUSUM compare every later day with the first 28 days; real series
+    drift (trends, routine changes) that the simulator does not contain, and a drift of the same size in steps
+    is a larger multiple of a low-variability user's SD, so those users accumulate more alarms. This would be
+    the convention effect again, but it is a hypothesis. With 17 users per tercile and unlabelled real changes,
+    it is reported as an open real-data finding, not a conclusion.

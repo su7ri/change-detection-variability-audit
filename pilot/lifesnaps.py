@@ -81,7 +81,7 @@ def bisect(fn, s, eval_len, lo, hi, iters=40):
     return 0.5 * (lo + hi)
 
 
-def run(zeros_observed: bool, n_boot: int):
+def run(zeros_observed: bool, n_boot: int, log: bool = False):
     users = eligible(load_series(zeros_observed))
     n = len(users)
     if n < MIN_USERS:
@@ -95,7 +95,8 @@ def run(zeros_observed: bool, n_boot: int):
         g[idx] = k
     sd0 = np.nanstd(X[..., : sim.BASE_DAYS], axis=-1, ddof=1)         # (n, 1)
 
-    s0 = dt.StatsNaN(X, with_mad=False)
+    prep = (lambda a: np.log(np.maximum(a, 1.0))) if log else (lambda a: a)
+    s0 = dt.StatsNaN(prep(X), with_mad=False)
     pop = float(np.nanmedian(s0.prior_sd[s0.can_decide]))
     detectors = {name: (fn, rng_) for name, (fn, rng_) in dt.DETECTORS.items()}
     for lam in LAMS:
@@ -109,7 +110,7 @@ def run(zeros_observed: bool, n_boot: int):
     inj = {}
     for conv, eff in EFFECTS:
         delta = np.repeat(eff * sd0, N_ONSETS, axis=1) if conv == "standardised" else np.full(onset.shape, eff)
-        inj[conv] = dt.StatsNaN(sim.inject(Xr, onset, delta))
+        inj[conv] = dt.StatsNaN(prep(sim.inject(Xr, onset, delta)))
     boot_rng = np.random.default_rng(pilot.BOOT_SEED)
 
     rows, pooled = [], {}
@@ -141,11 +142,12 @@ def run(zeros_observed: bool, n_boot: int):
     return rows, info
 
 
-def consistency(rows):
+def consistency(rows, log: bool = False):
     """Compare each real-data gap with the simulator's gap (missing scenario). Returns list of dict."""
-    sim_rows = [r for r in csv.DictReader(open("results/pilot_gaps.csv")) if r["scenario"] == "missing"]
-    tr_rows = [r for r in csv.DictReader(open("results/tradeoff_gaps.csv"))
-               if r["scenario"] == "missing" and r["kind"] == "sd"]
+    sim_rows = [r for r in csv.DictReader(open("results/pilot_gaps.csv"))
+                if r["scenario"] == ("realistic_log" if log else "missing")]
+    tr_rows = [] if log else [r for r in csv.DictReader(open("results/tradeoff_gaps.csv"))
+                              if r["scenario"] == "missing" and r["kind"] == "sd"]
     out = []
     for r in rows:
         det = r["detector"]
@@ -168,7 +170,7 @@ def consistency(rows):
     return out
 
 
-def summary_md(label, rows, info) -> str:
+def summary_md(label, rows, info, log: bool = False) -> str:
     if info["inconclusive"]:
         return f"## {label}\n\nOnly {info['n']} eligible users (need {MIN_USERS}). Inconclusive; rules not loosened.\n"
     out = [f"## {label}", "",
@@ -183,7 +185,7 @@ def summary_md(label, rows, info) -> str:
                    f"{c['missing_row_share']:.3f} | {c['eval_len']:.1f} | {c['median_log_sd']:.2f} |")
     out += ["", "| detector | convention | metric | real gap [95%] | verdict | simulator gap (missing) | consistent | informative | same sign |",
             "|---|---|---|---|---|---|---|---|---|"]
-    cons = {(c["detector"], c["convention"], c["metric"]): c for c in consistency(rows)}
+    cons = {(c["detector"], c["convention"], c["metric"]): c for c in consistency(rows, log)}
     n_cons = n_inf = n_tot = 0
     for r in rows:
         c = cons.get((r["detector"], r["convention"], r["metric"]))
@@ -205,7 +207,16 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--counts", action="store_true")
     ap.add_argument("--boot", type=int, default=1000)
+    ap.add_argument("--log", action="store_true", help="exploratory: detectors run on log(steps), primary run only")
     a = ap.parse_args()
+    if a.log:
+        rows, info = run(False, a.boot, log=True)
+        md = ["# LifeSnaps, exploratory log-scale run (post hoc; see the 2026-10-26 amendment)", "",
+              summary_md("Exploratory: detectors on log(steps), 0-step days not observed", rows, info, log=True)]
+        pilot.write_csv("results/lifesnaps_log_gaps.csv", rows)
+        open("results/lifesnaps_log_summary.md", "w").write("\n".join(md))
+        print("log run -> eligible", info["n"])
+        return
     if a.counts:
         for z in (False, True):
             us = load_series(z)
