@@ -182,9 +182,12 @@ def main():
     ap.add_argument("--reps", type=int, default=20)
     ap.add_argument("--boot", type=int, default=2000)
     ap.add_argument("--out", default="results")
+    ap.add_argument("--only", default="", help="comma-separated scenario names (from all scenarios, incl. drift)")
+    ap.add_argument("--prefix", default="pilot", help="output file prefix")
     a = ap.parse_args()
     all_gaps, all_groups, infos = [], [], {}
-    for name, scen in sim.SCENARIOS.items():
+    chosen = {n: sim.ALL_SCENARIOS[n] for n in a.only.split(",")} if a.only else sim.SCENARIOS
+    for name, scen in chosen.items():
         gaps, groups, info = run_scenario(scen, a.users, a.reps, a.boot)
         all_gaps += gaps
         all_groups += groups
@@ -192,9 +195,9 @@ def main():
         print(f"{name}: done in {info['seconds']:.0f}s; params {info['params']}")
     for r in all_gaps:
         r["verdict"] = verdict(r)
-    write_csv(os.path.join(a.out, "pilot_gaps.csv"), all_gaps)
-    write_csv(os.path.join(a.out, "pilot_groups.csv"), all_groups)
-    with open(os.path.join(a.out, "pilot_summary.md"), "w") as f:
+    write_csv(os.path.join(a.out, f"{a.prefix}_gaps.csv"), all_gaps)
+    write_csv(os.path.join(a.out, f"{a.prefix}_groups.csv"), all_groups)
+    with open(os.path.join(a.out, f"{a.prefix}_summary.md"), "w") as f:
         f.write(summary_md(all_gaps, all_groups, infos))
     print("wrote", a.out)
 

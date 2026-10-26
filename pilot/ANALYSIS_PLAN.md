@@ -141,3 +141,32 @@ Dated, appended after the fact, never edited in place.
     alarm-rate gap at the same lambda (realistic, lambda 1: +0.72 vs -0.21).
   - Caveat: this is the same simulator and the same assumptions; the lambda that balances the gaps is specific to
     this variability distribution and not a recommendation for real data.
+- 2026-10-26, written BEFORE running the experiment below (drift hypothesis, prompted by the LifeSnaps result).
+  Real series showed an alarm-rate gap for EWMA and CUSUM, also on log-steps, that the simulator did not produce.
+  Untested guess: real series drift away from the 28-day baseline, and a drift of the same relative size is a larger
+  multiple of a low-variability user's SD. The simulator is extended with such a drift and the guess is tested.
+  - Drift: each simulated series gets a linear trend on the log scale, reaching T at the end of the series
+    (day 83), T ~ Normal(0, d) drawn independently per user and replicate, independent of the user's variability.
+    The trend is applied to the un-injected series, so baseline statistics see only the first days of it.
+    d = 0.15 (`drift_small`), 0.25 (`drift`), 0.35 (`drift_large`); `drift_log` = d 0.25 with detectors on log(steps).
+    These sizes are assumptions, not estimates from data. Same simulated users and noise as `realistic` (the drift
+    is drawn after all other random numbers, so the earlier scenarios are unchanged). Everything else as in the pilot.
+  - Hypothesis D: with drift, in `drift` and in `drift_log`, the alarm-rate gap (high minus low) of EWMA and of CUSUM
+    is below -1.0 per 100 user-days with a 95% interval excluding 0, while the personal z-score window detector's
+    gap stays inside the margin (|gap| < 1.0). Dose-response: the CUSUM alarm-rate gap is more negative in
+    `drift_large` than in `drift` and in `drift` than in `drift_small`.
+  - If D holds, drift is reported as a mechanism that can produce the real-data pattern (not as proof that it did).
+    If it does not hold, the guess is reported as not supported by this model of drift.
+  - Delay and detection gaps are also reported, with no separate decision rule.
+- 2026-10-26, after running the drift scenarios (results/drift_summary.md, drift_gaps.csv, drift_groups.csv; 1000
+  resamples; the earlier scenarios re-run and byte-identical). Hypothesis D is NOT supported.
+  - Alarm-rate gap, high minus low, CUSUM / EWMA: `realistic` -0.99 / -0.47; `drift_small` -1.09 / -0.68;
+    `drift` -1.21 / -0.92; `drift_large` -1.31 / -1.10; `drift_log` -0.52 / -0.53. The z-score window detector stays
+    within the margin everywhere (-0.48 at most).
+  - Against the pre-set rule: in `drift`, CUSUM passes (-1.21, interval excludes 0) but EWMA does not (-0.92, above the
+    -1.0 margin); in `drift_log` neither passes (both inside the margin). The dose-response for CUSUM holds (more
+    negative with more drift) but the steps are small.
+  - So in this model drift widens the raw-scale CUSUM/EWMA alarm-rate gap a little, and does not reproduce the log-scale
+    gap seen in LifeSnaps (real -3.15 / -2.34 against simulated -0.5). The drift guess is not supported as the
+    explanation; the real-data gap stays unexplained. Other candidates (changes that are real and not injected,
+    wear-time and routine effects tied to variability, small-sample noise with 17 users per tercile) are untested.

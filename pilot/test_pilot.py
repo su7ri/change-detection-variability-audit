@@ -199,3 +199,20 @@ def test_calibrate_fn_hits_target():
     pop = float(np.median(s.prior_sd))
     c = dt.calibrate_fn(lambda st, k: dt.fire_shrunk(st, k, 0.5, pop), s, 3.33)
     assert abs(dt.alarm_rate(dt.fire_shrunk(s, c, 0.5, pop)) - 3.33) < 0.15
+
+
+def test_drift_zero_unchanged_and_drift_size():
+    base = dict(heavy_tails=True, weekly=True, autocorr=True, seed_key="realistic")
+    rng = np.random.default_rng(3)
+    users = sim.make_users(80, rng)
+    a = sim.simulate_series(users, 5, sim.Scenario("a", **base), np.random.default_rng(9))
+    b = sim.simulate_series(users, 5, sim.Scenario("b", drift_sd=0.25, **base), np.random.default_rng(9))
+    assert np.array_equal(a[..., 0], b[..., 0])               # no drift on day 0
+    end = np.log(b[..., -1]) - np.log(a[..., -1])
+    assert abs(end.std() - 0.25) < 0.06 and abs(end.mean()) < 0.06
+    assert np.allclose(np.log(b[..., 41]) - np.log(a[..., 41]), end * 41 / 83)
+
+
+def test_drift_scenarios_registered_and_old_unchanged():
+    assert set(sim.DRIFT_SCENARIOS) == {"drift_small", "drift", "drift_large", "drift_log"}
+    assert all(s.drift_sd == 0 for s in sim.SCENARIOS.values())

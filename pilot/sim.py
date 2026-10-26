@@ -42,6 +42,7 @@ class Scenario:
     missing: bool = False       # days missing, more often for high-variability users
     prior_len: int = 21         # window detectors: days in the prior window
     base_len: int = 28          # EWMA/CUSUM: days in the fixed baseline
+    drift_sd: float = 0.0       # SD of the log-scale drift reached at the last day (0 = no drift)
 
 
 IDEAL = Scenario("ideal", heavy_tails=False, weekly=False, autocorr=False)
@@ -55,8 +56,15 @@ SHORT14 = Scenario("short14", True, True, True, seed_key="realistic", prior_len=
 SHORT7 = Scenario("short7", True, True, True, seed_key="realistic", prior_len=7, base_len=7)
 MISSING_SHORT14 = Scenario("missing_short14", True, True, True, seed_key="realistic", missing=True,
                            prior_len=14, base_len=14)
+# Slow drift away from the baseline, independent of variability (same data as `realistic`, drift drawn last)
+DRIFT_SMALL = Scenario("drift_small", True, True, True, seed_key="realistic", drift_sd=0.15)
+DRIFT = Scenario("drift", True, True, True, seed_key="realistic", drift_sd=0.25)
+DRIFT_LARGE = Scenario("drift_large", True, True, True, seed_key="realistic", drift_sd=0.35)
+DRIFT_LOG = Scenario("drift_log", True, True, True, log_detect=True, seed_key="realistic", drift_sd=0.25)
 SCENARIOS = {s.name: s for s in (IDEAL, REALISTIC, REALISTIC_LOG, SYMMETRIC, MISSING, SHORT14, SHORT7,
                                  MISSING_SHORT14)}
+DRIFT_SCENARIOS = {s.name: s for s in (DRIFT_SMALL, DRIFT, DRIFT_LARGE, DRIFT_LOG)}
+ALL_SCENARIOS = {**SCENARIOS, **DRIFT_SCENARIOS}
 
 P_MISS_MIN, P_MISS_SPAN = 0.05, 0.30     # missing probability = 0.05 + 0.30 * (sigma - 0.10) / 0.80
 
@@ -94,11 +102,15 @@ def simulate_series(users: dict, reps: int, scen: Scenario, rng: np.random.Gener
     if scen.weekly:
         dow = np.arange(N_DAYS)[None, None, :] + rng.integers(0, 7, size=(n, reps, 1))
         weekly = users["amp"][:, None, None] * np.cos(2.0 * np.pi * (dow - users["phase"][:, None, None]) / 7.0)
+    trend = 0.0
+    if scen.drift_sd > 0:                               # drawn after every other random number
+        end = rng.normal(0.0, scen.drift_sd, size=(n, reps, 1))
+        trend = end * (np.arange(N_DAYS) / (N_DAYS - 1.0))[None, None, :]
     if scen.additive:
         scale = (np.minimum(users["sigma"], ADDITIVE_SIGMA_CAP) / users["sigma"])[:, None, None]
         rel = 1.0 + eps * scale + weekly
         return users["mu"][:, None, None] * np.maximum(rel, ADDITIVE_FLOOR)
-    return np.exp(np.log(users["mu"])[:, None, None] + eps + weekly)
+    return np.exp(np.log(users["mu"])[:, None, None] + eps + weekly + trend)
 
 
 def draw_onsets(n: int, reps: int, rng: np.random.Generator) -> np.ndarray:
