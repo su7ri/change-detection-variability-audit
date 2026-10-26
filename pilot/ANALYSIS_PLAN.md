@@ -229,3 +229,37 @@ Dated, appended after the fact, never edited in place.
     variability is. A single balanced lambda is not a stable result: it sits near the margins and moves with the data.
     Seed-to-seed variation of point estimates is about 0.3 to 0.4 days for the delay gaps at lambda 1 (2.27, 1.96, 2.76
     for evaluation seeds 202, 505, 606).
+- 2026-10-26, written BEFORE running the experiment below (combined-change check, prompted by the second critical review:
+  the 16 sensitivity settings each changed one assumption). Question: do the three sensitivity claims (R1, R2, R3, defined
+  in the sensitivity amendment above, unchanged) survive when several assumptions change together? Base = `realistic`.
+  - Three combinations, chosen from the one-at-a-time results (not from any combined run):
+    C1 `combo_weak`   the three conditions that made R2 fail, together: narrow variability spread (log-SD 0.20),
+                      alarm-rate target 6.0 per 100 user-days, 14-day ramp change.
+    C2 `combo_stress` the conditions that enlarged gaps or noise, together: wide spread (log-SD 0.55), level-variability
+                      correlation +0.4, Student-t noise with 3 df, strong autocorrelation (phi ~ U(0.3, 0.8)).
+    C3 `combo_reallike` features the real LifeSnaps data have, together: missing days more frequent for high-variability
+                      users, 14-day prior window and baseline, level-variability correlation -0.4, 14-day ramp change.
+  - Everything else, the criteria R1 to R3, the margins, the 1000 resamples and the seeds (101, 202) are unchanged.
+  - Predictions, written before the run: R1 holds in all three; R2 fails in C1 (every one of its three parts weakened R2
+    alone) and holds in C2 and C3; R3 fails in C2 (wide spread and positive correlation each failed it alone) and is
+    uncertain in C1 and C3. Where the result differs from these predictions, the report says so.
+  - With only three combinations, no 80% rule: each criterion is reported as held or failed per combination.
+  - Descriptive only (no decision rule): whether any lambda has all three intervals inside the margins; the CUSUM
+    alarm-rate gap on raw steps against the real-data value of about -3.3.
+  - These three are examples of joint changes, not a search of the space. A claim that holds here is not shown to hold
+    for all combinations.
+- 2026-10-26, results of the combined-change check above (results/sensitivity_combos_*.csv/md; `python sensitivity.py --combos`).
+  Existing sensitivity outputs were re-run after the code change; the two CSVs are byte-identical.
+  - R1 holds in 3 of 3 (all 18 cells "none"; largest point estimate +0.54 days, CUSUM in C3). Predicted: yes.
+  - R2 holds in 1 of 3 (C2 only). C1 `combo_weak` fails (absolute delay gap at lambda 0 is -1.07, margin 1.5): predicted.
+    C3 `combo_reallike` fails (absolute delay gap at lambda 1 is +0.66, margin 1.5): **prediction missed**, I had expected it to
+    hold. In C1 and C3 the crossing is small, not reversed: signs are as before, sizes are below the pre-set criterion.
+  - R3 holds in C1 and C3 and fails in C2. Predicted for C2; "uncertain" for C1 and C3. In C1 and C3, lambda 0.75 and 1 have all
+    three intervals inside the margins (descriptive), because the gaps are small to begin with.
+  - C2 `combo_stress` (wide spread, correlation +0.4, t3 noise, strong autocorrelation): no lambda on the grid balances the
+    three gaps. At lambda 0.75: alarm +1.31, standardised delay -1.63, absolute delay +1.52, all three with verdict REAL.
+    The strongest case for the mitigation therefore requires that users' variability is not very spread out.
+  - Exploratory: no combination reproduces the real CUSUM alarm-rate gap (-0.52, -0.84, -0.75 against -3.3).
+  - Reading: the audit result (R1) holds in all 20 settings tried (the base case, 16 changed one at a time, and 3 combined).
+    The crossing and the balanced lambda are real in the base case and under heterogeneous users, shrink to within the margins
+    under weak-signal or real-data-like conditions, and fail to balance under the most heterogeneous condition.

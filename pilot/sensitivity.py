@@ -46,6 +46,16 @@ VARIANTS = [
 ]
 
 
+COMBOS = [
+    _v("combo_weak", "C1 weak signal", "narrow spread + target 6.0 + 14-day ramp",
+       dict(sigma_sd=0.20, ramp_days=14), target=6.0),
+    _v("combo_stress", "C2 stress", "wide spread + corr +0.4 + t3 + strong phi",
+       dict(sigma_sd=0.55, level_corr=0.4, t_df=3, phi_range=(0.3, 0.8))),
+    _v("combo_reallike", "C3 real-like", "missing days + 14-day windows + corr -0.4 + 14-day ramp",
+       dict(missing=True, prior_len=14, base_len=14, level_corr=-0.4, ramp_days=14)),
+]
+
+
 def run_variant(v, n_users, reps, n_boot):
     kw = dict(v["run"])
     nu = kw.pop("n_users", n_users)
@@ -101,11 +111,13 @@ def label(n_ok: int, n: int) -> str:
     return "sensitive"
 
 
-def summary_md(results, infos) -> str:
-    names = [v["name"] for v in VARIANTS]
+def summary_md(results, infos, variants=None, combos=False) -> str:
+    variants = variants or VARIANTS
+    names = [v["name"] for v in variants]
     crit = {n: criteria(*results[n]) for n in names}
-    out = ["# Sensitivity analysis (simulated users only)", "",
-           "One factor of the `realistic` simulator is changed at a time; everything else is as in the base case.",
+    out = ["# " + ("Combined-change check (simulated users only)" if combos else "Sensitivity analysis (simulated users only)"), "",
+           ("Several assumptions of the `realistic` simulator are changed together; everything else is as in the base case." if combos
+            else "One factor of the `realistic` simulator is changed at a time; everything else is as in the base case."),
            "Detectors are re-tuned to the variant's alarm-rate target on a separate calibration set. Gap = high minus low variability tercile.",
            "Criteria were fixed before the run (ANALYSIS_PLAN.md, 2026-10-26): R1 no REAL delay or detection gap for the personal detectors "
            "(standardised, 1 SD); R2 the crossing (alarm gap at lambda 0 above +1.0 and at lambda 1 below +1.0; absolute-convention delay gap "
@@ -114,24 +126,35 @@ def summary_md(results, infos) -> str:
            "## Criteria by variant", "",
            "| variant | factor: level | R1 | R2 | R3 (balanced lambda) | alarm gap lambda 0 / 1 | abs. delay gap lambda 0 / 1 (days) | CUSUM alarm-rate gap |",
            "|---|---|---|---|---|---|---|---|"]
-    for v in VARIANTS:
+    for v in variants:
         c = crit[v["name"]]
         out.append(f"| {v['name']} | {v['factor']}: {v['level']} | {'yes' if c['R1'] else 'NO'} | {'yes' if c['R2'] else 'NO'} | "
                    f"{'yes (' + ', '.join(f'{b:g}' for b in c['balanced']) + ')' if c['R3'] else 'NO'} | "
                    f"{c['a0']:+.2f} / {c['a1']:+.2f} | {c['d0']:+.2f} / {c['d1']:+.2f} | {c['cusum_alarm_gap']:+.2f} |")
     var = [n for n in names if n != "base"]
-    out += ["", "## Verdict per claim (16 changed variants; base case shown above for reference)", ""]
+    out += ["", ("## Verdict per claim (three combinations; no 80% rule)" if combos else
+                 "## Verdict per claim (16 changed variants; base case shown above for reference)"), ""]
     for key, text in (("R1", "R1 personal detectors show no real delay or detection gap (1 SD)"),
                       ("R2", "R2 the crossing of the two equality conventions"),
                       ("R3", "R3 a balanced lambda exists")):
         ok = [n for n in var if crit[n][key]]
         bad = [n for n in var if not crit[n][key]]
-        out.append(f"- **{text}**: holds in {len(ok)} of {len(var)} variants, **{label(len(ok), len(var))}**."
+        verdict = "" if combos else f", **{label(len(ok), len(var))}**"
+        out.append(f"- **{text}**: holds in {len(ok)} of {len(var)}{'' if combos else ' variants'}{verdict}."
                    + (f" Fails in: {', '.join(bad)}." if bad else ""))
+    if combos:
+        strict = []
+        for n in names:
+            tr = results[n][1]
+            lams = [lam for lam in tradeoff.LAMBDAS
+                    if all(_g(tr, **{"lambda": lam, "convention": c, "metric": m})["verdict"] == "none"
+                           for c, m in (("none", "alarm_rate"), ("standardised", "rmd"), ("absolute", "rmd")))]
+            strict.append(f"{n}: " + (", ".join(f"{x:g}" for x in lams) if lams else "none"))
+        out += ["", "Lambda values whose three intervals all lie inside the margins (descriptive): " + "; ".join(strict) + "."]
     q4 = [(n, crit[n]["cusum_alarm_gap"]) for n in names if crit[n]["cusum_alarm_gap"] <= -2.0]
-    out += ["", "## Exploratory: can a variant reproduce the real-data CUSUM alarm-rate gap (about -3.3)?", "",
-            ("Variants with CUSUM alarm-rate gap at or below -2.0: " + ", ".join(f"{n} ({g:+.2f})" for n, g in q4) + ".") if q4
-            else "No variant reaches -2.0; the most negative is " +
+    out += ["", "## Exploratory: can a " + ("combination" if combos else "variant") + " reproduce the real-data CUSUM alarm-rate gap (about -3.3)?", "",
+            ("With CUSUM alarm-rate gap at or below -2.0: " + ", ".join(f"{n} ({g:+.2f})" for n, g in q4) + ".") if q4
+            else ("None" if combos else "No variant") + " reaches -2.0; the most negative is " +
                  min(((n, crit[n]['cusum_alarm_gap']) for n in names), key=lambda t: t[1])[0] + " (" +
                  f"{min(crit[n]['cusum_alarm_gap'] for n in names):+.2f}). The real-data gap stays unexplained.", "",
             "## Personal detectors, standardised 1 SD: gap [95% interval] and verdict", ""]
@@ -163,8 +186,11 @@ def main():
     ap.add_argument("--boot", type=int, default=1000)
     ap.add_argument("--out", default="results")
     ap.add_argument("--only", default="", help="comma-separated variant names (default: all)")
+    ap.add_argument("--combos", action="store_true", help="run the three combined-change settings instead")
     a = ap.parse_args()
-    chosen = [v for v in VARIANTS if not a.only or v["name"] in a.only.split(",")]
+    pool = ([VARIANTS[0]] + COMBOS) if a.combos else VARIANTS
+    prefix = "sensitivity_combos" if a.combos else "sensitivity"
+    chosen = [v for v in pool if not a.only or v["name"] in a.only.split(",")]
     results, infos = {}, {}
     for v in chosen:
         gaps, trows, info = run_variant(v, a.users, a.reps, a.boot)
@@ -172,10 +198,10 @@ def main():
         print(f"{v['name']}: {info['seconds']:.0f}s pooled {info['pooled']}", flush=True)
     if a.only:
         return
-    pilot.write_csv(os.path.join(a.out, "sensitivity_gaps.csv"), [r for n in results for r in results[n][0]])
-    pilot.write_csv(os.path.join(a.out, "sensitivity_tradeoff.csv"), [r for n in results for r in results[n][1]])
-    with open(os.path.join(a.out, "sensitivity_summary.md"), "w") as f:
-        f.write(summary_md(results, infos))
+    pilot.write_csv(os.path.join(a.out, f"{prefix}_gaps.csv"), [r for n in results for r in results[n][0]])
+    pilot.write_csv(os.path.join(a.out, f"{prefix}_tradeoff.csv"), [r for n in results for r in results[n][1]])
+    with open(os.path.join(a.out, f"{prefix}_summary.md"), "w") as f:
+        f.write(summary_md(results, infos, pool, a.combos))
     print("wrote", a.out)
 
 

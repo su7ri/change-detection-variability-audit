@@ -284,3 +284,16 @@ def test_sensitivity_criteria_on_fake_rows():
     gaps[0]["verdict"] = "REAL"
     assert not sv.criteria(gaps, tr)["R1"]
     assert sv.label(16, 16) == "robust" and sv.label(13, 16) == "mostly robust" and sv.label(12, 16) == "sensitive"
+
+
+def test_combos_are_joint_changes():
+    import sensitivity as sv
+    assert len(sv.VARIANTS) == 17 and len(sv.COMBOS) == 3
+    by = {v["name"]: v for v in sv.COMBOS}
+    weak = by["combo_weak"]
+    assert weak["scen"].sigma_sd == 0.20 and weak["scen"].ramp_days == 14 and weak["run"]["target"] == 6.0
+    stress = by["combo_stress"]["scen"]
+    assert (stress.sigma_sd, stress.level_corr, stress.t_df, stress.phi_range) == (0.55, 0.4, 3, (0.3, 0.8))
+    real = by["combo_reallike"]["scen"]
+    assert real.missing and real.prior_len == 14 and real.base_len == 14 and real.level_corr == -0.4 and real.ramp_days == 14
+    assert all(v["scen"].seed_key == "realistic" for v in sv.COMBOS)
