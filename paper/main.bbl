@@ -1,0 +1,150 @@
+\begin{thebibliography}{18}
+\providecommand{\natexlab}[1]{#1}
+\providecommand{\url}[1]{\texttt{#1}}
+\expandafter\ifx\csname urlstyle\endcsname\relax
+  \providecommand{\doi}[1]{doi: #1}\else
+  \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
+
+\bibitem[Alavi et~al.(2022)Alavi, Bogu, Wang, Rangan, Brooks, Wang,
+  et~al.]{alavi2022}
+Arash Alavi, Gireesh~K. Bogu, Meng Wang, Ekanath~Srihari Rangan, Andrew~W.
+  Brooks, Qiwen Wang, et~al.
+\newblock Real-time alerting system for {COVID-19} and other stress events
+  using wearable data.
+\newblock \emph{Nature Medicine}, 28\penalty0 (1):\penalty0 175--184, 2022.
+\newblock \doi{10.1038/s41591-021-01593-2}.
+
+\bibitem[Aminikhanghahi and Cook(2017)]{aminikhanghahi2017}
+Samaneh Aminikhanghahi and Diane~J. Cook.
+\newblock A survey of methods for time series change point detection.
+\newblock \emph{Knowledge and Information Systems}, 51\penalty0 (2):\penalty0
+  339--367, 2017.
+\newblock \doi{10.1007/s10115-016-0987-z}.
+
+\bibitem[Cacheda et~al.(2026)Cacheda, Carneiro, {\'A}lvarez, and
+  L{\'o}pez-Vizca{\'\i}no]{cacheda2026}
+Fidel Cacheda, V{\'\i}ctor Carneiro, Marco~A. {\'A}lvarez, and Manuel~F.
+  L{\'o}pez-Vizca{\'\i}no.
+\newblock Early detection of infectious diseases using wearable sensor data
+  through personalized baseline deviation modelling.
+\newblock \emph{Digital Health}, 12, 2026.
+\newblock \doi{10.1177/20552076261477919}.
+
+\bibitem[Dwork et~al.(2011)Dwork, Hardt, Pitassi, Reingold, and
+  Zemel]{dwork2011}
+Cynthia Dwork, Moritz Hardt, Toniann Pitassi, Omer Reingold, and Richard Zemel.
+\newblock Fairness through awareness, 2011.
+\newblock arXiv:1104.3913.
+
+\bibitem[Fraser and Harris(1989)]{fraser1989}
+C.~G. Fraser and E.~K. Harris.
+\newblock Generation and application of data on biological variation in
+  clinical chemistry.
+\newblock \emph{Critical Reviews in Clinical Laboratory Sciences}, 27:\penalty0
+  409--437, 1989.
+
+\bibitem[Gama et~al.(2014)Gama, {\v Z}liobait{\.e}, Bifet, Pechenizkiy, and
+  Bouchachia]{gama2014}
+Jo{\~a}o Gama, Indr{\.e} {\v Z}liobait{\.e}, Albert Bifet, Mykola Pechenizkiy,
+  and Abdelhamid Bouchachia.
+\newblock A survey on concept drift adaptation.
+\newblock \emph{ACM Computing Surveys}, 46\penalty0 (4):\penalty0 1--37, 2014.
+\newblock \doi{10.1145/2523813}.
+
+\bibitem[Hawkins(1987)]{hawkins1987}
+Douglas~M. Hawkins.
+\newblock Self-starting {CUSUM} charts for location and scale.
+\newblock \emph{Journal of the Royal Statistical Society: Series D (The
+  Statistician)}, 36\penalty0 (4):\penalty0 299--316, 1987.
+\newblock \doi{10.2307/2348827}.
+
+\bibitem[Lakens(2017)]{lakens2017}
+Dani{\"e}l Lakens.
+\newblock Equivalence tests: a practical primer for $t$ tests, correlations,
+  and meta-analyses.
+\newblock \emph{Social Psychological and Personality Science}, 8\penalty0
+  (4):\penalty0 355--362, 2017.
+\newblock \doi{10.1177/1948550617697177}.
+
+\bibitem[Mishra et~al.(2020)Mishra, Wang, Metwally, Bogu, Brooks, Bahmani,
+  et~al.]{mishra2020}
+Tejaswini Mishra, Meng Wang, Ahmed~A. Metwally, Gireesh~K. Bogu, Andrew~W.
+  Brooks, Amir Bahmani, et~al.
+\newblock Pre-symptomatic detection of {COVID-19} from smartwatch data.
+\newblock \emph{Nature Biomedical Engineering}, 4\penalty0 (12):\penalty0
+  1208--1220, 2020.
+\newblock \doi{10.1038/s41551-020-00640-6}.
+
+\bibitem[Moreno-Mu{\~n}oz et~al.(2018)Moreno-Mu{\~n}oz, Ram{\'\i}rez, and
+  Art{\'e}s-Rodr{\'\i}guez]{morenomunoz2018}
+Pablo Moreno-Mu{\~n}oz, David Ram{\'\i}rez, and Antonio
+  Art{\'e}s-Rodr{\'\i}guez.
+\newblock Change-point detection on hierarchical circadian models, 2018.
+\newblock arXiv:1809.04197.
+
+\bibitem[Morris et~al.(2019)Morris, White, and Crowther]{morris2019}
+Tim~P. Morris, Ian~R. White, and Michael~J. Crowther.
+\newblock Using simulation studies to evaluate statistical methods.
+\newblock \emph{Statistics in Medicine}, 38\penalty0 (11):\penalty0 2074--2102,
+  2019.
+\newblock \doi{10.1002/sim.8086}.
+
+\bibitem[Page(1954)]{page1954}
+E.~S. Page.
+\newblock Continuous inspection schemes.
+\newblock \emph{Biometrika}, 41\penalty0 (1--2):\penalty0 100--115, 1954.
+\newblock \doi{10.1093/biomet/41.1-2.100}.
+
+\bibitem[Roberts(1959)]{roberts1959}
+S.~W. Roberts.
+\newblock Control chart tests based on geometric moving averages.
+\newblock \emph{Technometrics}, 1:\penalty0 239--250, 1959.
+
+\bibitem[Royston and Parmar(2013)]{royston2013}
+P.~Royston and M.~K.~B. Parmar.
+\newblock Restricted mean survival time: an alternative to the hazard ratio for
+  the design and analysis of randomized trials with a time-to-event outcome.
+\newblock \emph{BMC Medical Research Methodology}, 13:\penalty0 152, 2013.
+\newblock \doi{10.1186/1471-2288-13-152}.
+
+\bibitem[Siepe et~al.(2024)Siepe, Barto{\v s}, Morris, Boulesteix, Heck, and
+  Pawel]{siepe2024}
+B.~S. Siepe, F.~Barto{\v s}, T.~P. Morris, A.-L. Boulesteix, D.~W. Heck, and
+  S.~Pawel.
+\newblock Simulation studies for methodological research in psychology: a
+  standardized template for planning, preregistration, and reporting.
+\newblock \emph{Psychological Methods}, 2024.
+\newblock \doi{10.1037/met0000695}.
+\newblock Advance online publication.
+
+\bibitem[Smyth(2004)]{smyth2004}
+Gordon~K. Smyth.
+\newblock Linear models and empirical {Bayes} methods for assessing
+  differential expression in microarray experiments.
+\newblock \emph{Statistical Applications in Genetics and Molecular Biology},
+  3\penalty0 (1):\penalty0 Article 3, 2004.
+\newblock \doi{10.2202/1544-6115.1027}.
+
+\bibitem[Yfantidou et~al.(2022{\natexlab{a}})Yfantidou, Karagianni, Efstathiou,
+  Vakali, Palotti, Giakatos, Marchioro, Kazlouski, Ferrari, and
+  Girdzijauskas]{lifesnaps_zenodo}
+Sofia Yfantidou, Christina Karagianni, Stefanos Efstathiou, Athena Vakali, Joao
+  Palotti, Dimitrios~Panteleimon Giakatos, Thomas Marchioro, Andrei Kazlouski,
+  Elena Ferrari, and {\v S}ar{\=u}nas Girdzijauskas.
+\newblock {LifeSnaps}: a 4-month multi-modal dataset capturing unobtrusive
+  snapshots of our lives in the wild, 2022{\natexlab{a}}.
+\newblock Version 4, CC BY 4.0. \url{https://doi.org/10.5281/zenodo.7229547}.
+
+\bibitem[Yfantidou et~al.(2022{\natexlab{b}})Yfantidou, Karagianni, Efstathiou,
+  Vakali, Palotti, Giakatos, Marchioro, Kazlouski, Ferrari, and
+  Girdzijauskas]{yfantidou2022}
+Sofia Yfantidou, Christina Karagianni, Stefanos Efstathiou, Athena Vakali, Joao
+  Palotti, Dimitrios~Panteleimon Giakatos, Thomas Marchioro, Andrei Kazlouski,
+  Elena Ferrari, and {\v S}ar{\=u}nas Girdzijauskas.
+\newblock {LifeSnaps}, a 4-month multi-modal dataset capturing unobtrusive
+  snapshots of our lives in the wild.
+\newblock \emph{Scientific Data}, 9\penalty0 (1):\penalty0 663,
+  2022{\natexlab{b}}.
+\newblock \doi{10.1038/s41597-022-01764-x}.
+
+\end{thebibliography}

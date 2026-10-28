@@ -1,0 +1,26 @@
+\begin{table}[t]
+\centering
+\small
+\caption{LifeSnaps consistency check, 51 eligible users, 17 per variability tercile. Real-data gap (high $-$ low) with 95\% interval, next to the gap found in the simulation with missing days. Alarm rate in episodes per 100 user-days (these alarms may include real changes); delay in days for an injected change of 1 personal SD or 1000 steps. Bold: meaningful by the pre-set rule. \emph{In}: the simulated gap lies inside the real-data interval.}
+\label{tab:ls}
+\begin{tabular}{@{}llrlrc@{}}
+\toprule
+Measure & Detector & Real gap [95\% CI] & & Simulated & In \\
+\midrule
+Alarm rate & Fixed threshold & +0.84 [$-$0.78, +2.62] & & +3.13 & no \\
+ & Personal z-score & $-$0.54 [$-$1.96, +1.01] & & $-$0.18 & yes \\
+ & EWMA & $-$0.69 [$-$2.48, +1.13] & & $-$0.63 & yes \\
+ & CUSUM & \textbf{$-$3.33 [$-$4.86, $-$1.62]} & & $-$1.02 & no \\
+\addlinespace
+Delay, 1 personal SD & Fixed threshold & $-$1.01 [$-$2.29, +0.28] & & $-$3.22 & no \\
+ & Personal z-score & +0.39 [$-$0.81, +1.64] & & +0.35 & yes \\
+ & EWMA & +0.94 [$-$0.68, +2.64] & & +0.58 & yes \\
+ & CUSUM & \textbf{+1.50 [+0.21, +3.00]} & & +0.64 & yes \\
+\addlinespace
+Delay, 1000 steps & Fixed threshold & $-$1.45 [$-$3.61, +0.59] & & $-$2.67 & yes \\
+ & Personal z-score & +1.46 [$-$0.63, +3.65] & & +2.18 & yes \\
+ & EWMA & +2.29 [$-$0.44, +4.77] & & +2.89 & yes \\
+ & CUSUM & \textbf{+3.29 [+0.85, +5.45]} & & +3.27 & yes \\
+\bottomrule
+\end{tabular}
+\end{table}

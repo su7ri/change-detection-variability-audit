@@ -1,0 +1,16 @@
+cff-version: 1.2.0
+message: "If you use this code or the results, please cite it as below."
+title: "Do personal-baseline change detectors treat steady and variable users equally? A pre-specified simulation audit with a small real-data check"
+type: software
+authors:
+  - family-names: "Azarinejadianlangroudi"
+    given-names: "Soroush"
+repository-code: "https://github.com/su7ri/change-detection-variability-audit"
+keywords:
+  - change detection
+  - wearables
+  - personal baselines
+  - simulation study
+  - fairness
+# After the GitHub release has been archived on Zenodo, add the DOI here (and in main.tex, \zenodoDOI):
+# doi: "10.5281/zenodo.XXXXXXX"

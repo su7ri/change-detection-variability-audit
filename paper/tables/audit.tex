@@ -1,0 +1,29 @@
+\begin{table}[t]
+\centering
+\small
+\caption{Audit in the base simulation (``realistic'', 300 users $\times$ 20 replicates). Group means by variability tercile, and the gap (high $-$ low) with its 95\% bootstrap interval. Verdicts follow the margins fixed in advance: 1.0 alarm per 100 user-days, 1.5 days, 0.10 in proportion detected. ``Negligible'' means the whole interval lies inside the margin; ``meaningful'' means the interval excludes zero and the gap exceeds the margin.}
+\label{tab:audit}
+\begin{tabular}{@{}lrrrlc@{}}
+\toprule
+Detector & Low & Mid & High & Gap [95\% CI] & Verdict \\
+\midrule
+\multicolumn{6}{@{}l}{\emph{A. Alarm episodes per 100 user-days, series without a change}} \\
+Fixed threshold & 1.87 & 3.32 & 5.20 & +3.33 [+2.81, +3.91] & meaningful \\
+Personal z-score & 3.42 & 3.35 & 3.22 & $-$0.21 [$-$0.41, 0.00] & negligible \\
+EWMA & 3.45 & 3.35 & 2.98 & $-$0.47 [$-$0.65, $-$0.29] & negligible \\
+CUSUM & 3.68 & 3.33 & 2.68 & $-$0.99 [$-$1.22, $-$0.79] & inconclusive \\
+\midrule
+\multicolumn{6}{@{}l}{\emph{B. Restricted mean delay in days (censored at 14), change of 1 personal SD}} \\
+Fixed threshold & 6.69 & 4.54 & 3.31 & $-$3.37 [$-$3.96, $-$2.70] & meaningful \\
+Personal z-score & 3.60 & 3.65 & 3.94 & +0.34 [+0.12, +0.55] & negligible \\
+EWMA & 2.98 & 3.03 & 3.29 & +0.31 [+0.06, +0.53] & negligible \\
+CUSUM & 2.40 & 2.44 & 2.71 & +0.31 [+0.12, +0.51] & negligible \\
+\midrule
+\multicolumn{6}{@{}l}{\emph{C. Proportion detected within 14 days, change of 1 personal SD}} \\
+Fixed threshold & 0.74 & 0.89 & 0.95 & +0.22 [+0.16, +0.27] & meaningful \\
+Personal z-score & 0.96 & 0.96 & 0.94 & $-$0.02 [$-$0.04, $-$0.01] & negligible \\
+EWMA & 0.97 & 0.97 & 0.95 & $-$0.02 [$-$0.03, $-$0.01] & negligible \\
+CUSUM & 0.99 & 0.99 & 0.97 & $-$0.02 [$-$0.03, $-$0.01] & negligible \\
+\bottomrule
+\end{tabular}
+\end{table}

@@ -1,0 +1,22 @@
+\begin{table}[t]
+\centering
+\small
+\caption{Alarm-rate gap (high $-$ low tercile, per 100 user-days) in eight simulated scenarios. Bold: the interval excludes zero and the gap exceeds 1.0. Cells: for the three personal-baseline detectors, the number of cells with a meaningful delay or detection gap among 24 (3 detectors $\times$ delay and detection $\times$ four change sizes of 0.5 to 2 personal SD). Max delay gap: the largest delay gap (days) at 1 personal SD.}
+\label{tab:scenarios}
+\begin{tabular}{@{}p{5.2cm}rrrrrr@{}}
+\toprule
+ & \multicolumn{4}{c}{Alarm-rate gap} & \multicolumn{2}{c}{Personal detectors} \\
+\cmidrule(lr){2-5}\cmidrule(l){6-7}
+Scenario & Fixed & z-score & EWMA & CUSUM & Cells & Max delay gap \\
+\midrule
+Ideal (Gaussian, no autocorrelation, no weekly cycle) & \textbf{+3.64} & $-$0.23 & $-$0.40 & \textbf{$-$1.16} & 0 & $-$0.08 \\
+Realistic (base case) & \textbf{+3.33} & $-$0.21 & $-$0.47 & $-$0.99 & 0 & +0.34 \\
+Realistic, detectors on log steps & \textbf{+2.96} & +0.13 & $-$0.10 & $-$0.11 & 0 & $-$0.80 \\
+Symmetric noise on the raw scale & \textbf{+2.06} & +0.27 & 0.00 & $-$0.03 & 0 & +0.15 \\
+Missing days (more for variable users) & \textbf{+3.13} & $-$0.18 & $-$0.63 & \textbf{$-$1.02} & 0 & +0.64 \\
+14-day windows & \textbf{+3.20} & $-$0.20 & $-$0.39 & $-$0.68 & 0 & +0.28 \\
+7-day windows & \textbf{+3.02} & $-$0.23 & $-$0.26 & $-$0.38 & 0 & +0.23 \\
+Missing days and 14-day windows & \textbf{+3.03} & $-$0.16 & $-$0.53 & $-$0.75 & 0 & +0.43 \\
+\bottomrule
+\end{tabular}
+\end{table}

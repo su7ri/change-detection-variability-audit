@@ -1,0 +1,27 @@
+\begin{table}[H]
+\centering
+\small
+\caption{Mixing own and population scale (base simulation). Point estimates of the gap (high $-$ low tercile); bold: meaningful by the pre-set rule. Intervals for every cell are in \texttt{tradeoff\_gaps.csv}. $\lambda=0$ is a fixed threshold, $\lambda=1$ the personal z-score; each $\lambda$ is re-tuned to the same pooled alarm rate. Delay in days; detection as a proportion.}
+\label{tab:lambda}
+\begin{tabular}{@{}lrrrrr@{}}
+\toprule
+ & Alarm rate & \multicolumn{2}{c}{Delay} & \multicolumn{2}{c}{Detected in 14 days} \\
+\cmidrule(lr){3-4}\cmidrule(l){5-6}
+$\lambda$ & per 100 days & 1 SD & 1000 steps & 1 SD & 1000 steps \\
+\midrule
+\multicolumn{6}{@{}l}{\emph{Scale: standard deviation}} \\
+0 & \textbf{+3.33} & \textbf{$-$3.37} & \textbf{$-$2.86} & \textbf{+0.22} & \textbf{+0.22} \\
+0.25 & \textbf{+2.70} & \textbf{$-$2.39} & $-$1.44 & \textbf{+0.12} & +0.09 \\
+0.5 & \textbf{+1.73} & $-$1.44 & +0.06 & +0.06 & $-$0.02 \\
+0.75 & +0.79 & $-$0.49 & +1.33 & +0.01 & \textbf{$-$0.11} \\
+1 & $-$0.21 & +0.34 & \textbf{+2.27} & $-$0.02 & \textbf{$-$0.17} \\
+\midrule
+\multicolumn{6}{@{}l}{\emph{Scale: robust (1.4826 $\times$ MAD)}} \\
+0 & \textbf{+3.33} & \textbf{$-$3.37} & \textbf{$-$2.86} & \textbf{+0.22} & \textbf{+0.22} \\
+0.25 & \textbf{+2.89} & \textbf{$-$2.57} & \textbf{$-$1.72} & \textbf{+0.14} & \textbf{+0.11} \\
+0.5 & \textbf{+2.28} & \textbf{$-$1.79} & $-$0.69 & +0.09 & +0.02 \\
+0.75 & \textbf{+1.55} & $-$1.10 & +0.31 & +0.04 & $-$0.04 \\
+1 & +0.72 & $-$0.36 & +1.18 & +0.01 & $-$0.09 \\
+\bottomrule
+\end{tabular}
+\end{table}

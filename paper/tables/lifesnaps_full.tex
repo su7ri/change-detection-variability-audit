@@ -1,0 +1,43 @@
+{\footnotesize\setlength{\tabcolsep}{3.5pt}
+\begin{longtable}{@{}lllrlrcc@{}}
+\caption{All 35 cells of the LifeSnaps check (0-step days treated as not observed). Real-data gap (high $-$ low) with 95\% interval and pre-set verdict; simulated gap in the matching ``missing'' scenario; \emph{In}: simulated gap inside the real interval; \emph{Inf}: interval does not contain both the simulated gap and zero.}\label{tab:lsfull}\\
+\toprule Detector & Change & Metric & Real gap [95\% CI] & Verdict & Simulated & In & Inf \\ \midrule \endfirsthead
+\toprule Detector & Change & Metric & Real gap [95\% CI] & Verdict & Simulated & In & Inf \\ \midrule \endhead
+\bottomrule \endlastfoot
+Fixed threshold & none & alarm rate & +0.84 [$-$0.78, +2.62] & inconclusive & +3.13 & no & yes \\
+Fixed threshold & 1 SD & delay & $-$1.01 [$-$2.29, +0.28] & inconclusive & $-$3.22 & no & yes \\
+Fixed threshold & 1 SD & det. 14 d & +0.05 [$-$0.04, +0.14] & inconclusive & +0.22 & no & yes \\
+Fixed threshold & 1000 steps & delay & $-$1.45 [$-$3.61, +0.59] & inconclusive & $-$2.67 & yes & no \\
+Fixed threshold & 1000 steps & det. 14 d & +0.16 [$-$0.02, +0.34] & inconclusive & +0.21 & yes & no \\
+Personal z-score & none & alarm rate & $-$0.54 [$-$1.96, +1.01] & inconclusive & $-$0.18 & yes & no \\
+Personal z-score & 1 SD & delay & +0.39 [$-$0.81, +1.64] & inconclusive & +0.35 & yes & no \\
+Personal z-score & 1 SD & det. 14 d & 0.00 [$-$0.07, +0.06] & negligible & $-$0.02 & yes & no \\
+Personal z-score & 1000 steps & delay & +1.46 [$-$0.63, +3.65] & inconclusive & +2.18 & yes & no \\
+Personal z-score & 1000 steps & det. 14 d & $-$0.17 [$-$0.35, +0.03] & inconclusive & $-$0.16 & yes & no \\
+EWMA & none & alarm rate & $-$0.69 [$-$2.48, +1.13] & inconclusive & $-$0.63 & yes & no \\
+EWMA & 1 SD & delay & +0.94 [$-$0.68, +2.64] & inconclusive & +0.58 & yes & no \\
+EWMA & 1 SD & det. 14 d & $-$0.05 [$-$0.13, +0.02] & inconclusive & $-$0.03 & yes & no \\
+EWMA & 1000 steps & delay & +2.29 [$-$0.44, +4.77] & inconclusive & +2.89 & yes & no \\
+EWMA & 1000 steps & det. 14 d & $-$0.26 [$-$0.45, $-$0.04] & meaningful & $-$0.20 & yes & yes \\
+CUSUM & none & alarm rate & $-$3.33 [$-$4.86, $-$1.62] & meaningful & $-$1.02 & no & yes \\
+CUSUM & 1 SD & delay & +1.50 [+0.21, +3.00] & meaningful & +0.64 & yes & yes \\
+CUSUM & 1 SD & det. 14 d & $-$0.08 [$-$0.18, 0.00] & inconclusive & $-$0.02 & yes & no \\
+CUSUM & 1000 steps & delay & +3.29 [+0.85, +5.45] & meaningful & +3.27 & yes & yes \\
+CUSUM & 1000 steps & det. 14 d & $-$0.30 [$-$0.45, $-$0.14] & meaningful & $-$0.23 & yes & yes \\
+Shrunk $\lambda=0$ & none & alarm rate & +0.84 [$-$0.83, +2.62] & inconclusive & +3.13 & no & yes \\
+Shrunk $\lambda=0$ & 1 SD & delay & $-$1.01 [$-$2.22, +0.31] & inconclusive & $-$3.22 & no & yes \\
+Shrunk $\lambda=0$ & 1 SD & det. 14 d & +0.05 [$-$0.04, +0.14] & inconclusive & +0.22 & no & yes \\
+Shrunk $\lambda=0$ & 1000 steps & delay & $-$1.45 [$-$3.47, +0.74] & inconclusive & $-$2.67 & yes & no \\
+Shrunk $\lambda=0$ & 1000 steps & det. 14 d & +0.16 [$-$0.03, +0.35] & inconclusive & +0.21 & yes & no \\
+Shrunk $\lambda=0.5$ & none & alarm rate & +0.50 [$-$0.96, +2.01] & inconclusive & +1.68 & yes & no \\
+Shrunk $\lambda=0.5$ & 1 SD & delay & $-$0.21 [$-$1.57, +1.10] & inconclusive & $-$1.29 & yes & no \\
+Shrunk $\lambda=0.5$ & 1 SD & det. 14 d & +0.01 [$-$0.06, +0.08] & negligible & +0.07 & yes & no \\
+Shrunk $\lambda=0.5$ & 1000 steps & delay & +0.09 [$-$2.01, +2.27] & inconclusive & +0.10 & yes & no \\
+Shrunk $\lambda=0.5$ & 1000 steps & det. 14 d & +0.01 [$-$0.18, +0.20] & inconclusive & $-$0.02 & yes & no \\
+Shrunk $\lambda=1$ & none & alarm rate & $-$0.54 [$-$1.99, +0.89] & inconclusive & $-$0.18 & yes & no \\
+Shrunk $\lambda=1$ & 1 SD & delay & +0.39 [$-$0.91, +1.71] & inconclusive & +0.35 & yes & no \\
+Shrunk $\lambda=1$ & 1 SD & det. 14 d & 0.00 [$-$0.07, +0.06] & negligible & $-$0.02 & yes & no \\
+Shrunk $\lambda=1$ & 1000 steps & delay & +1.46 [$-$0.67, +3.63] & inconclusive & +2.18 & yes & no \\
+Shrunk $\lambda=1$ & 1000 steps & det. 14 d & $-$0.17 [$-$0.34, +0.01] & inconclusive & $-$0.16 & yes & no \\
+\end{longtable}
+}
