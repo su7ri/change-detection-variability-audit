@@ -1,0 +1,4 @@
+convention,detector,effect,factor,file,gap,hi_1000,hi_10000,kind,lambda,level,lo_1000,lo_10000,metric,scenario,variant,verdict_1000,verdict_10000,zeros_observed
+absolute,fixed,1500.0,evaluation seed,sensitivity_gaps,0.07350000000000001,0.10051250000000013,0.09899999999999987,,,606,0.04699999999999982,0.04849999999999999,det14,evalseed_606,evalseed_606,unclear,none,
+absolute,sd_lam0,1000.0,C1 weak signal,sensitivity_combos_tradeoff,-1.0740000000000016,-0.6419875000000004,-0.6374874999999994,sd,0.0,narrow spread + target 6.0 + 14-day ramp,-1.477525,-1.5095125000000018,rmd,combo_weak,combo_weak,none,unclear,
+standardised,shrunk_lam0.5,1.0,,lifesnaps_gaps,-0.20882352941176574,1.097132352941177,1.0383823529411746,,,,-1.5709558823529417,-1.49125,rmd,lifesnaps,,unclear,none,False

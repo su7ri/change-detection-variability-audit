@@ -142,3 +142,4 @@ Dated, appended after the fact, never edited in place.
   cross-fitted; inconclusive in both). Pooled alarm rates in the held-out folds ranged from 2.6 to 3.8 per 100 user-days.
   Reading by the rule fixed above: the primary LifeSnaps statements are insensitive to in-sample tuning, and verdicts that sit at a
   margin are not stable.
+- 2026-10-29: the bootstrap used 1000 resamples, not the 2000 of the frozen analysis plan; see the disclosure in ANALYSIS_PLAN.md (10000-resample re-run: results_mc/lifesnaps_gaps.csv, lifesnaps_log_gaps.csv; one verdict changes, unclear -> none, shrunk scale at 1 SD delay).

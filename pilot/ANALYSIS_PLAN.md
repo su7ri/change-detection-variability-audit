@@ -289,3 +289,16 @@ Dated, appended after the fact, never edited in place.
   moving 21-day SD or the baseline SD, in these two scenarios. z0's alarm-rate gap is small and positive, the z-score's is
   small and negative (-0.21), and CUSUM's is -0.99, so CUSUM's alarm-rate gap is not explained by the use of a baseline
   scale alone.
+- 2026-10-29, disclosure and check (written after the re-run; not planned before it). The frozen plan above says 2000 bootstrap
+  resamples. Every committed run used 1000 (the amendments of 2026-10-25 and later state "1000" but none says that this
+  differs from the frozen plan). The departure was noticed on 2026-10-29 while answering a reader's comments. It changes no
+  estimate: the resampling only affects the interval ends and verdicts.
+  - Check: re-run every analysis whose result has a bootstrap interval with 10000 resamples (pilot.py for the main and
+    drift scenarios, tradeoff.py, sensitivity.py with and without --combos, and the two LifeSnaps runs) with the same data and seeds. Output goes to
+    results_mc/ (the committed results/ files are not touched and remain the reported ones). mc_check.py compares the two sets.
+  - Result (results_mc/mc_check_summary.csv): 4080 cells in 9 files, 3024 of them with a verdict. All point estimates are
+    identical (max difference 0.0). No interval end moves by more than 0.10 in any simulated file and by more than 0.25 in
+    the LifeSnaps files. Three verdicts change, all marginal: sensitivity, evaluation seed 606, fixed threshold, absolute
+    1500 steps, detection within 14 days (unclear -> none); combined setting C1 with the narrow spread, mixed scale lambda 0,
+    absolute 1000 steps, delay (none -> unclear); LifeSnaps, shrunk scale, 1 SD, delay (unclear -> none). Reported
+    numbers stay the 1000-resample ones; the paper discloses this and gives the counts.
