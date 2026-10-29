@@ -1,0 +1,30 @@
+\begin{landscape}
+\begin{table}[H]
+\centering
+\scriptsize
+\setlength{\tabcolsep}{2.5pt}
+\caption{Mixing own and population scale (base simulation): gaps (high $-$ low tercile) with 95\% intervals for every cell of \cref{tab:lambda}. Bold: meaningful. Alarm rate per 100 user-days; delay in days; detection as a proportion within 14 days.}
+\label{tab:lambda_ci}
+\begin{tabular}{@{}lrrrrr@{}}
+\toprule
+ & Alarm rate & \multicolumn{2}{c}{Delay} & \multicolumn{2}{c}{Detected in 14 days} \\
+\cmidrule(lr){3-4}\cmidrule(l){5-6}
+$\lambda$ & per 100 days & 1 SD & 1000 steps & 1 SD & 1000 steps \\
+\midrule
+\multicolumn{6}{@{}l}{\emph{Scale: standard deviation}} \\
+0 & \textbf{+3.33 [+2.81, +3.91]} & \textbf{$-$3.37 [$-$4.03, $-$2.74]} & \textbf{$-$2.86 [$-$3.41, $-$2.31]} & \textbf{+0.22 [+0.17, +0.27]} & \textbf{+0.22 [+0.17, +0.27]} \\
+0.25 & \textbf{+2.70 [+2.25, +3.13]} & \textbf{$-$2.39 [$-$2.93, $-$1.89]} & $-$1.44 [$-$1.80, $-$1.08] & \textbf{+0.12 [+0.09, +0.16]} & +0.09 [+0.06, +0.12] \\
+0.5 & \textbf{+1.73 [+1.40, +2.08]} & $-$1.44 [$-$1.82, $-$1.07] & +0.06 [$-$0.24, +0.37] & +0.06 [+0.04, +0.09] & $-$0.02 [$-$0.04, 0.00] \\
+0.75 & +0.79 [+0.53, +1.05] & $-$0.49 [$-$0.73, $-$0.26] & +1.33 [+0.97, +1.67] & +0.01 [$-$0.01, +0.02] & \textbf{$-$0.11 [$-$0.14, $-$0.08]} \\
+1 & $-$0.21 [$-$0.42, 0.00] & +0.34 [+0.13, +0.53] & \textbf{+2.27 [+1.79, +2.73]} & $-$0.02 [$-$0.04, $-$0.01] & \textbf{$-$0.17 [$-$0.21, $-$0.14]} \\
+\midrule
+\multicolumn{6}{@{}l}{\emph{Scale: robust ($1.4826\times$ MAD)}} \\
+0 & \textbf{+3.33 [+2.78, +3.89]} & \textbf{$-$3.37 [$-$4.01, $-$2.73]} & \textbf{$-$2.86 [$-$3.43, $-$2.32]} & \textbf{+0.22 [+0.17, +0.27]} & \textbf{+0.22 [+0.17, +0.27]} \\
+0.25 & \textbf{+2.89 [+2.42, +3.31]} & \textbf{$-$2.57 [$-$3.13, $-$2.01]} & \textbf{$-$1.72 [$-$2.14, $-$1.34]} & \textbf{+0.14 [+0.11, +0.19]} & \textbf{+0.11 [+0.08, +0.14]} \\
+0.5 & \textbf{+2.28 [+1.92, +2.65]} & \textbf{$-$1.79 [$-$2.19, $-$1.38]} & $-$0.69 [$-$1.02, $-$0.35] & +0.09 [+0.06, +0.12] & +0.02 [0.00, +0.05] \\
+0.75 & \textbf{+1.55 [+1.28, +1.84]} & $-$1.10 [$-$1.39, $-$0.82] & +0.31 [$-$0.02, +0.64] & +0.04 [+0.03, +0.06] & $-$0.04 [$-$0.07, $-$0.02] \\
+1 & +0.72 [+0.53, +0.92] & $-$0.36 [$-$0.60, $-$0.13] & +1.18 [+0.75, +1.64] & +0.01 [0.00, +0.03] & $-$0.09 [$-$0.13, $-$0.06] \\
+\bottomrule
+\end{tabular}
+\end{table}
+\end{landscape}

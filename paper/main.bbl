@@ -1,4 +1,4 @@
-\begin{thebibliography}{18}
+\begin{thebibliography}{19}
 \providecommand{\natexlab}[1]{#1}
 \providecommand{\url}[1]{\texttt{#1}}
 \expandafter\ifx\csname urlstyle\endcsname\relax
@@ -124,6 +124,14 @@ Gordon~K. Smyth.
 \newblock \emph{Statistical Applications in Genetics and Molecular Biology},
   3\penalty0 (1):\penalty0 Article 3, 2004.
 \newblock \doi{10.2202/1544-6115.1027}.
+
+\bibitem[Tolosa et~al.(2026)Tolosa, Ihianle, Machado, Yahaya, and
+  Lotfi]{tolosa2026}
+E.~Tolosa, I.~K. Ihianle, P.~Machado, S.~W. Yahaya, and A.~Lotfi.
+\newblock From patterns to deviations: Detecting behavioural drift for mental
+  health monitoring using smartphone and wearable data.
+\newblock \emph{Electronics}, 15\penalty0 (4):\penalty0 885, 2026.
+\newblock \doi{10.3390/electronics15040885}.
 
 \bibitem[Yfantidou et~al.(2022{\natexlab{a}})Yfantidou, Karagianni, Efstathiou,
   Vakali, Palotti, Giakatos, Marchioro, Kazlouski, Ferrari, and

@@ -13,7 +13,7 @@ Preprint source. Everything in the paper that is a number comes from the CSV res
 Do not edit `numbers.tex` or `tables/*.tex` by hand; change the script and rerun it.
 
 Python needs `numpy`, `pandas`, `matplotlib`. LaTeX needs a standard TeX Live (`mathpazo`, `natbib`, `cleveref`,
-`booktabs`, `longtable`, `microtype`, `enumitem`, `float`, `placeins`).
+`booktabs`, `longtable`, `microtype`, `enumitem`, `float`, `placeins`, `pdflscape`).
 
 `arxiv_source.zip` is the upload for arXiv: `main.tex`, `numbers.tex`, `main.bbl`, `tables/`, `figures/*.pdf`.
 It compiles with `pdflatex main.tex` (twice) without BibTeX. Rebuild it after any change to the text:

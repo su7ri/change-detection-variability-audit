@@ -14,6 +14,7 @@ ROOT = Path(__file__).resolve().parent.parent
 # Inside the repository the result files are read straight from pilot/results (paper/data is not used: the repository's
 # .gitignore excludes folders called data/). A local paper/data folder, if present, takes precedence.
 DATA = ROOT / "data" if (ROOT / "data").exists() else ROOT.parent / "pilot" / "results"
+MC = ROOT / "data_mc" if (ROOT / "data_mc").exists() else ROOT.parent / "pilot" / "results_mc"   # 10000-resample re-runs
 TABLES = ROOT / "tables"
 FIGS = ROOT / "figures"
 
@@ -73,10 +74,23 @@ LS_TERCILES = pd.DataFrame(
 LS_ELIGIBLE, LS_TOTAL = 51, 71
 LS_POP_SCALE = 3638
 LS_SPEARMAN = -0.33
+# Cross-fit (results/lifesnaps_crossfit_summary.md; no CSV twin for these two): fold sizes and range of the held-out pooled alarm rates.
+CF_FOLDS = (27, 24)
+CF_POOLED_MIN, CF_POOLED_MAX = 2.62, 3.76
 
 
 def load(name: str) -> pd.DataFrame:
     return pd.read_csv(DATA / f"{name}.csv", float_precision="round_trip")   # exact doubles, so that rounding ties match the repo summaries
+
+
+def load_mc(name: str) -> pd.DataFrame:
+    return pd.read_csv(MC / f"{name}.csv", float_precision="round_trip")
+
+
+def clearly_beyond(gap: float, lo: float, hi: float, metric: str) -> bool:
+    """The whole interval lies beyond the margin on the side of the gap (a stricter reading than 'meaningful')."""
+    m = MARGIN[metric]
+    return (lo > m) if gap > 0 else (hi < -m)
 
 
 def cell(df: pd.DataFrame, **kw) -> pd.Series:

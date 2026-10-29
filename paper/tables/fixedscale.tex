@@ -1,0 +1,26 @@
+\begin{table}[H]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{3.0pt}
+\caption{Personal z-score with the moving scale (SD of the 21 days before the last week) and with the baseline scale (SD of days 0--27, $\mathrm{z}_0$): gap (high $-$ low tercile) with 95\% interval and verdict, for the base simulation and the simulation with missing days. Alarm rate per 100 user-days; delay in days; detection as a proportion within 14 days.}
+\label{tab:fixedscale}
+\begin{tabular}{@{}lrrl@{}}
+\toprule
+Measure & z-score (moving scale) & $\mathrm{z}_0$ (baseline scale) & $\mathrm{z}_0$ verdict \\
+\midrule
+\multicolumn{4}{@{}l}{\emph{Base simulation}} \\
+Alarm rate & $-$0.21 [$-$0.41, 0.00] & +0.13 [$-$0.04, +0.34] & negligible \\
+Delay, 1 personal SD & +0.34 [+0.12, +0.55] & +0.30 [+0.08, +0.53] & negligible \\
+Detected, 1 personal SD & $-$0.02 [$-$0.04, $-$0.01] & $-$0.01 [$-$0.03, 0.00] & negligible \\
+Delay, 1000 steps & \textbf{+2.27 [+1.83, +2.73]} & \textbf{+2.06 [+1.63, +2.53]} & meaningful \\
+Detected, 1000 steps & \textbf{$-$0.17 [$-$0.21, $-$0.14]} & \textbf{$-$0.17 [$-$0.21, $-$0.13]} & meaningful \\
+\midrule
+\multicolumn{4}{@{}l}{\emph{Missing days}} \\
+Alarm rate & $-$0.18 [$-$0.34, +0.02] & +0.15 [$-$0.03, +0.31] & negligible \\
+Delay, 1 personal SD & +0.35 [+0.15, +0.56] & +0.44 [+0.23, +0.66] & negligible \\
+Detected, 1 personal SD & $-$0.02 [$-$0.03, $-$0.01] & $-$0.03 [$-$0.04, $-$0.01] & negligible \\
+Delay, 1000 steps & \textbf{+2.18 [+1.74, +2.62]} & \textbf{+2.00 [+1.55, +2.45]} & meaningful \\
+Detected, 1000 steps & \textbf{$-$0.16 [$-$0.20, $-$0.12]} & \textbf{$-$0.17 [$-$0.21, $-$0.13]} & meaningful \\
+\bottomrule
+\end{tabular}
+\end{table}

@@ -1,0 +1,44 @@
+\begin{landscape}
+\begin{table}[H]
+\centering
+\scriptsize
+\setlength{\tabcolsep}{3.0pt}
+\caption{Alarm-rate gap (high $-$ low tercile, per 100 user-days) with 95\% interval in the eight simulated scenarios of \cref{tab:scenarios}. Bold: meaningful by the pre-set rule.}
+\label{tab:scenarios_ci}
+\begin{tabular}{@{}p{3.0cm}rrrr@{}}
+\toprule
+Scenario & Fixed & Personal z-score & EWMA & CUSUM \\
+\midrule
+Ideal & \textbf{+3.64 [+3.09, +4.14]} & $-$0.23 [$-$0.34, $-$0.13] & $-$0.40 [$-$0.57, $-$0.25] & \textbf{$-$1.16 [$-$1.35, $-$1.00]} \\
+Base case & \textbf{+3.33 [+2.81, +3.91]} & $-$0.21 [$-$0.41, 0.00] & $-$0.47 [$-$0.65, $-$0.29] & $-$0.99 [$-$1.22, $-$0.79] \\
+Detectors on log steps & \textbf{+2.96 [+2.67, +3.24]} & +0.13 [$-$0.05, +0.32] & $-$0.10 [$-$0.27, +0.07] & $-$0.11 [$-$0.30, +0.08] \\
+Symmetric noise & \textbf{+2.06 [+1.57, +2.52]} & +0.27 [+0.08, +0.46] & 0.00 [$-$0.19, +0.18] & $-$0.03 [$-$0.21, +0.16] \\
+Missing days & \textbf{+3.13 [+2.63, +3.66]} & $-$0.18 [$-$0.34, +0.02] & $-$0.63 [$-$0.80, $-$0.47] & \textbf{$-$1.02 [$-$1.21, $-$0.82]} \\
+14-day windows & \textbf{+3.20 [+2.69, +3.74]} & $-$0.20 [$-$0.40, +0.02] & $-$0.39 [$-$0.58, $-$0.20] & $-$0.68 [$-$0.89, $-$0.47] \\
+7-day windows & \textbf{+3.02 [+2.52, +3.51]} & $-$0.23 [$-$0.44, $-$0.01] & $-$0.26 [$-$0.47, $-$0.04] & $-$0.38 [$-$0.61, $-$0.14] \\
+Missing days, 14-day windows & \textbf{+3.03 [+2.54, +3.54]} & $-$0.16 [$-$0.34, +0.05] & $-$0.53 [$-$0.71, $-$0.33] & $-$0.75 [$-$0.97, $-$0.55] \\
+\bottomrule
+\end{tabular}
+\end{table}
+\end{landscape}
+\begin{table}[H]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{3.0pt}
+\caption{Delay gap (days, high $-$ low tercile) for a change of one personal SD, with 95\% interval, in the eight simulated scenarios; the three personal-baseline detectors. No cell is meaningful.}
+\label{tab:scenarios_ci_delay}
+\begin{tabular}{@{}p{3.6cm}rrr@{}}
+\toprule
+Scenario & Personal z-score & EWMA & CUSUM \\
+\midrule
+Ideal & +0.06 [$-$0.12, +0.21] & $-$0.08 [$-$0.24, +0.07] & +0.05 [$-$0.08, +0.17] \\
+Base case & +0.34 [+0.12, +0.55] & +0.31 [+0.06, +0.53] & +0.31 [+0.12, +0.51] \\
+Detectors on log steps & $-$0.80 [$-$1.01, $-$0.60] & $-$0.61 [$-$0.84, $-$0.40] & $-$0.60 [$-$0.81, $-$0.39] \\
+Symmetric noise & +0.11 [$-$0.12, +0.32] & +0.11 [$-$0.09, +0.33] & +0.15 [$-$0.09, +0.39] \\
+Missing days & +0.35 [+0.15, +0.56] & +0.58 [+0.34, +0.82] & +0.64 [+0.44, +0.84] \\
+14-day windows & +0.26 [+0.03, +0.51] & +0.28 [+0.03, +0.48] & +0.13 [$-$0.06, +0.34] \\
+7-day windows & +0.23 [$-$0.05, +0.51] & +0.11 [$-$0.16, +0.37] & $-$0.14 [$-$0.37, +0.11] \\
+Missing days, 14-day windows & +0.31 [+0.07, +0.53] & +0.43 [+0.19, +0.67] & +0.40 [+0.17, +0.61] \\
+\bottomrule
+\end{tabular}
+\end{table}
