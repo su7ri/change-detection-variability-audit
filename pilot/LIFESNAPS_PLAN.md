@@ -132,3 +132,13 @@ Dated, appended after the fact, never edited in place.
     cell, that cell is named in the paper.
   - Limits: each fold's constants are estimated on about 25 users, which is noisy; the check does not turn the LifeSnaps
     check into an out-of-sample validation.
+- 2026-10-29, after running the cross-fit (results/lifesnaps_crossfit_gaps.csv, results/lifesnaps_crossfit_summary.md; the
+  primary results were not re-run). Folds of 27 and 24 users. Predictions (a) and (b) both hold. CUSUM's alarm-rate gap
+  cross-fitted is -2.98 [-4.50, -1.19] (in sample -3.33 [-4.86, -1.62]). No cell that was REAL in the primary run changed sign.
+  Three of the 20 verdicts change at the margin: CUSUM delay at 1 personal SD (+1.41 [+0.16, +2.88], now inconclusive because
+  the estimate falls below the 1.5-day margin; in sample +1.50), EWMA detection within 14 days at 1000 steps (-0.24
+  [-0.44, +0.00], now inconclusive; in sample REAL) and z-score detection within 14 days at 1000 steps (-0.20 [-0.38, -0.00],
+  now REAL; in sample inconclusive). One near-zero cell changes sign (z-score alarm-rate gap, -0.54 in sample, +0.14
+  cross-fitted; inconclusive in both). Pooled alarm rates in the held-out folds ranged from 2.6 to 3.8 per 100 user-days.
+  Reading by the rule fixed above: the primary LifeSnaps statements are insensitive to in-sample tuning, and verdicts that sit at a
+  margin are not stable.

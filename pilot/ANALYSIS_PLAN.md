@@ -282,3 +282,10 @@ Dated, appended after the fact, never edited in place.
   - Reading rule, fixed now: if P1-P3 all hold in both scenarios, the z-score pattern is reported as independent of the
     choice between moving and baseline scale in these two scenarios. If any fails, the pattern is reported as scale-dependent
     and the failed prediction is listed.
+- 2026-10-29, after running the check above (results/fixedscale_gaps.csv, results/fixedscale_summary.md). P1, P2 and P3 hold
+  in both scenarios. Base case, z0: alarm-rate gap +0.13 [-0.04, +0.34]; delay at 1 personal SD +0.30 [+0.08, +0.53];
+  detection within 14 days at 1 SD -0.01 [-0.03, -0.00]; delay at 1000 steps +2.06 [+1.63, +2.53] (REAL). Missing days:
+  +0.15, +0.44, -0.03 and +2.00. By the reading rule, the z-score pattern does not depend on whether the scale is the
+  moving 21-day SD or the baseline SD, in these two scenarios. z0's alarm-rate gap is small and positive, the z-score's is
+  small and negative (-0.21), and CUSUM's is -0.99, so CUSUM's alarm-rate gap is not explained by the use of a baseline
+  scale alone.
