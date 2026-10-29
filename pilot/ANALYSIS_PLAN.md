@@ -263,3 +263,22 @@ Dated, appended after the fact, never edited in place.
   - Reading: the audit result (R1) holds in all 20 settings tried (the base case, 16 changed one at a time, and 3 combined).
     The crossing and the balanced lambda are real in the base case and under heterogeneous users, shrink to within the margins
     under weak-signal or real-data-like conditions, and fail to balance under the most heterogeneous condition.
+- 2026-10-29, written BEFORE running the check below. EXPLORATORY and POST HOC: it answers a reader's question raised after
+  all results were known (does a personal detector's behaviour come from the algorithm or from the way its scale is estimated?).
+  It does not replace or change any earlier analysis.
+  - Question: the z-score divides the window difference by the SD of the 21 days before the last week (moving scale); EWMA
+    and CUSUM divide by the SD of days 0-27 (baseline scale s0). Does the z-score's pattern depend on that choice?
+  - New detector z0: alarm if (mean of the last 7 days - mean of the 21 days before them) / s0 <= -c, with s0 the SD of
+    days 0-27 in steps (observed days only; no alarm if fewer than half of the baseline days are observed). Tuned like the
+    others (bisection on calibration seed 101 to 3.33 alarm episodes per 100 user-days; evaluated on seed 202).
+  - Run: scenarios `realistic` and `missing`; everything else as in the primary run (300 users x 20 replicates, onsets,
+    standardised sizes 0.5-2 SD and absolute sizes 500-2000 steps, tercile groups, metrics, margins, 1000 bootstrap
+    resamples, seed 7). Script fixedscale.py. Earlier result files are not touched; detectors.py gains one attribute
+    (base_sd) and one function (fire_zbase) and nothing else.
+  - A tiny test run of the script (30 users x 4 replicates, 20 resamples) was made to debug it. Its output is not used.
+  - Predictions, fixed now: (P1) in both scenarios z0 has no REAL delay or detection gap at 1 personal SD; (P2) in both
+    scenarios the point estimate of z0's alarm-rate gap is inside the 1.0 margin; (P3) in both scenarios z0 has a REAL delay
+    gap at 1000 steps with the same sign as the z-score's.
+  - Reading rule, fixed now: if P1-P3 all hold in both scenarios, the z-score pattern is reported as independent of the
+    choice between moving and baseline scale in these two scenarios. If any fails, the pattern is reported as scale-dependent
+    and the failed prediction is listed.

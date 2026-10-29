@@ -31,6 +31,7 @@ class Stats:
         m0 = x[..., : sim.BASE_DAYS].mean(-1, keepdims=True)
         s0 = np.maximum(x[..., : sim.BASE_DAYS].std(-1, ddof=1, keepdims=True), 1e-9)
         self.u = (x[..., sim.BASE_DAYS:] - m0) / s0          # standardised against days 0-27
+        self.base_sd = s0                                    # baseline SD in steps (used by the fixed-scale z-score only)
 
 
 class StatsNaN:
@@ -76,6 +77,7 @@ class StatsNaN:
             s0 = np.maximum(np.nanstd(b, axis=-1, ddof=1, keepdims=True), 1e-9)
         good = nb >= max(2, int(np.ceil(base_len / 2)))
         self.u = np.where(good, (x[..., sim.BASE_DAYS:] - m0) / s0, np.nan)
+        self.base_sd = np.where(good, s0, np.nan)            # baseline SD in steps (fixed-scale z-score only)
 
 
 def make_stats(x: np.ndarray, scen) -> "Stats | StatsNaN":
@@ -91,6 +93,11 @@ def fire_fixed(s: Stats, T: float) -> np.ndarray:
 
 def fire_zscore(s: Stats, c: float) -> np.ndarray:
     return s.delta / s.prior_sd <= -c
+
+
+def fire_zbase(s, c: float) -> np.ndarray:
+    """Fixed-scale z-score (2026-10-29 amendment): the window difference divided by the baseline SD, not the moving SD."""
+    return s.delta / s.base_sd <= -c
 
 
 def fire_ewma(s: Stats, L: float, lam: float = EWMA_LAMBDA) -> np.ndarray:

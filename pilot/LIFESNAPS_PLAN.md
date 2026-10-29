@@ -115,3 +115,20 @@ Dated, appended after the fact, never edited in place.
     is a larger multiple of a low-variability user's SD, so those users accumulate more alarms. This would be
     the convention effect again, but it is a hypothesis. With 17 users per tercile and unlabelled real changes,
     it is reported as an open real-data finding, not a conclusion.
+- 2026-10-29, written BEFORE running the check below. EXPLORATORY and POST HOC: a reader pointed out that the tuning
+  constants were fitted on the same users whose gaps are evaluated (this plan says there is no separate calibration set).
+  This check does not replace the primary analysis.
+  - Two-fold cross-fitting by user. Folds are assigned at random within each variability tercile (seed 13), alternately, so each
+    fold holds about half of every tercile. For each fold, each detector's constant is tuned (bisection to 3.33 alarm episodes
+    per 100 user-days, pooled) on the series of the users in the OTHER fold and applied to the users in this fold. Gaps are then
+    computed over all users as in the primary run (same groups, onsets (seed 11), injections, metrics, margins, 1000 bootstrap
+    resamples, seed 7). The four primary detectors only; zero-step days not observed. Script crossfit.py.
+  - A debugging run of the script on synthetic stand-in data (not LifeSnaps) was made; no LifeSnaps output of the script has
+    been looked at.
+  - Predictions, fixed now: (a) every cell that was REAL in the primary run keeps its sign when cross-fitted; (b) CUSUM's
+    alarm-rate gap stays below -1.0 per 100 user-days with an interval that excludes 0.
+  - Reading rule, fixed now: if (a) and (b) both hold, the primary LifeSnaps statements are called insensitive to in-sample
+    tuning. If (b) fails, the paper says that CUSUM's alarm-rate gap depends on the tuning sample. If (a) fails for another
+    cell, that cell is named in the paper.
+  - Limits: each fold's constants are estimated on about 25 users, which is noisy; the check does not turn the LifeSnaps
+    check into an out-of-sample validation.
