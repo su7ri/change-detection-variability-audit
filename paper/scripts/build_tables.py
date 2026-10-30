@@ -136,7 +136,7 @@ M("ScenMeaningfulTotal", sum(v["n_real"] for v in scen_stats.values()))
 # ------------------------------------------------------------------ Table: lambda sweep (appendix), point estimates
 lines = [r"\begin{table}[H]", r"\centering", r"\small",
          r"\caption{Mixing own and population scale (base simulation). Point estimates of the gap (high $-$ low tercile); "
-         r"bold: meaningful by the pre-set rule. Intervals for every cell are in \cref{tab:lambda_ci}. "
+         r"bold: meaningful by the verdict rule. Intervals for every cell are in \cref{tab:lambda_ci}. "
          r"$\lambda=0$ is a fixed threshold, $\lambda=1$ the personal z-score; each $\lambda$ is re-tuned to the same pooled alarm rate. "
          r"Delay in days; detection as a proportion.}",
          r"\label{tab:lambda}",
@@ -270,7 +270,7 @@ lines = [r"\begin{table}[t]", r"\centering", r"\small",
          r"\caption{LifeSnaps consistency check, " + f"{LS_ELIGIBLE} eligible users" + r", 17 per variability tercile. "
          r"Real-data gap (high $-$ low) with 95\% interval, next to the gap found in the simulation with missing days. "
          r"Alarm rate in episodes per 100 user-days (these alarms may include real changes); delay in days for an injected change "
-         r"of 1 personal SD or 1000 steps. Bold: meaningful by the pre-set rule. \emph{In}: the simulated gap lies inside the real-data interval.}",
+         r"of 1 personal SD or 1000 steps. Bold: meaningful by the verdict rule. \emph{In}: the simulated gap lies inside the real-data interval.}",
          r"\label{tab:ls}",
          r"\begin{tabular}{@{}llrlrc@{}}", r"\toprule",
          r"Measure & Detector & Real gap [95\% CI] & & Simulated & In \\", r"\midrule"]
@@ -289,7 +289,7 @@ write("lifesnaps.tex", "\n".join(lines) + "\n")
 
 # full LifeSnaps table (appendix): 35 cells, primary run
 lines = [r"{\footnotesize\setlength{\tabcolsep}{2.4pt}", r"\begin{longtable}{@{}lllrlrcc@{}}",
-         r"\caption{All 35 cells of the LifeSnaps check (0-step days treated as not observed). Real-data gap (high $-$ low) with 95\% interval and pre-set verdict; "
+         r"\caption{All 35 cells of the LifeSnaps check (0-step days treated as not observed). Real-data gap (high $-$ low) with 95\% interval and verdict; "
          r"simulated gap in the matching ``missing'' scenario; \emph{Sim.\ in CI}: the simulated gap lies inside the real-data interval; \emph{Informative}: the interval does not contain both "
          r"the simulated gap and zero.}\label{tab:lsfull}\\",
          r"\toprule Detector & Change & Metric & Real gap [95\% CI] & Verdict & Simulated & Sim.\ in CI & Informative \\ \midrule \endfirsthead",
@@ -321,7 +321,7 @@ write("lifesnaps_terciles.tex", "\n".join(lines) + "\n")
 # ------------------------------------------------------------------ drift (appendix)
 lines = [r"\begin{table}[H]", r"\centering", r"\small",
          r"\caption{Slow drift away from the baseline (simulation; drift on the log scale reaching a normal draw with SD $d$ on day 83, independent of variability). "
-         r"Alarm-rate gap (high $-$ low tercile, per 100 user-days). Bold: meaningful. The pre-set hypothesis (CUSUM and EWMA below $-1.0$ in both ``drift'' and ``drift\_log'' while the z-score stays inside the margin) was not supported.}",
+         r"Alarm-rate gap (high $-$ low tercile, per 100 user-days). Bold: meaningful. The hypothesis written before this run (CUSUM and EWMA below $-1.0$ in both ``drift'' and ``drift\_log'' while the z-score stays inside the margin) was not supported.}",
          r"\label{tab:drift}",
          r"\begin{tabular}{@{}lcrrrr@{}}", r"\toprule",
          r"Scenario & $d$ & Fixed & z-score & EWMA & CUSUM \\", r"\midrule"]
@@ -372,7 +372,7 @@ def table_close(landscape=False):
 
 # --- scenarios with intervals: alarm-rate gap (four detectors) and delay gap at one personal SD (three personal detectors)
 lines = table_open("tab:scenarios_ci",
-                   r"Alarm-rate gap (high $-$ low tercile, per 100 user-days) with 95\% interval in the eight simulated scenarios of \cref{tab:scenarios}. Bold: meaningful by the pre-set rule.",
+                   r"Alarm-rate gap (high $-$ low tercile, per 100 user-days) with 95\% interval in the eight simulated scenarios of \cref{tab:scenarios}. Bold: meaningful by the verdict rule.",
                    5, r"@{}p{3.0cm}rrrr@{}", "scriptsize", landscape=True)
 lines += [r"Scenario & Fixed & Personal z-score & EWMA & CUSUM \\", r"\midrule"]
 for sc in SCEN_ORDER:

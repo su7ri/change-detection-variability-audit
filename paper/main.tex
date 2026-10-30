@@ -33,7 +33,7 @@
 \newcommand{\commit}{\texttt{fccc209}}
 
 \title{Do personal-baseline change detectors treat steady and variable users equally?\\[2pt]
-\large A pre-specified simulation audit with a small real-data check}
+\large A simulation audit with a small real-data check}
 \author{Soroush Azarinejadianlangroudi\\ Independent researcher}
 \date{October 2026}
 
@@ -41,17 +41,11 @@
 \maketitle
 
 \begin{abstract}
-\noindent Wearable and phone-based monitoring often raises an alarm when a person's recent behaviour departs from that person's own baseline.
-Scaling the alarm by each person's own variability is meant to make such rules fair, but a non-systematic search found no evaluation of whether people with steady and variable routines are in fact treated equally.
-We audit four standard detectors (a fixed threshold, a personal z-score, EWMA and CUSUM) on simulated daily step counts.
-Each detector is tuned to the same pooled alarm rate, and the lowest and highest terciles of day-to-day variability are compared on alarm rate, restricted mean detection delay and detection within 14 days, against margins set before the first run.
-The fixed threshold favours variable users: about 3.3 more alarms per 100 user-days and faster detection.
-The three personal detectors show negligible delay and detection gaps for a change of one personal standard deviation, and alarm-rate gaps below one per 100 user-days in the base simulation.
-This reverses when equal treatment means the same absolute change in steps: variable users are then detected 2.3 to 3.2 days later.
-A detector that mixes own and population scale moves between these two views; a balanced mixture exists in the base simulation but is not stable across settings.
-The absence of a delay gap for personal detectors held in all 20 simulator settings tried.
-A consistency check on 51 users of the open LifeSnaps data is mostly uninformative, and it shows a CUSUM alarm-rate gap larger than any simulator setting produced, which we could not explain.
-Code, dated plans and all results are public.
+\noindent Monitoring systems for wearables and phones often raise an alarm when a person's behaviour departs from that person's own baseline; we ask whether such alarms treat people with steady and variable routines equally.
+We audit four standard detectors (a fixed threshold, a personal z-score, EWMA and CUSUM) on simulated daily step counts, tune them to the same alarm rate, and compare the most and least variable thirds of users on alarm rate and detection delay under two definitions of equal treatment: the same change in personal standard deviations, or the same change in steps.
+In simulation, the fixed threshold gives variable users about 3.3 more alarms per 100 user-days but faster detection; the personal detectors show no delay gap beyond our margin for a change of one personal standard deviation in any of 20 settings, but detect a fixed change in steps 2.3 to 3.2 days later in variable users, so no single scale meets both definitions.
+These findings rest on a simulator whose assumptions we chose; a check on 51 real users (17 per group) is mostly inconclusive and shows a CUSUM alarm-rate gap larger than any simulated setting, which we could not explain.
+Code, analysis plans and all results are public.
 \end{abstract}
 
 \section{Introduction}
@@ -72,14 +66,17 @@ We audit four standard personal-baseline detectors: a fixed threshold on the rec
 We compare people with low and high day-to-day variability.
 The comparison is made at a matched operating point: each detector is tuned so that all detectors raise the same pooled number of alarms when nothing has changed.
 Without this, differences in delay would just reflect differences in false-alarm rate.
-We measure alarm rate, detection delay and the share of changes detected within 14 days, and we judge the gaps against margins fixed in a public plan before the first run.
+We measure alarm rate, detection delay and the share of changes detected within 14 days, and we judge the gaps against margins stated in an analysis plan written before the runs (\cref{sec:plan}).
+
+That a fixed threshold favours variable users, and that equal treatment in personal standard deviations is unequal in steps, is largely predictable from the algebra, and we do not present it as a finding.
+The value of the audit lies in a protocol that makes the two views comparable on one footing, in the explicit choice between two definitions of equal treatment, and in the measured size, stability and limits of the gaps.
 
 \paragraph{Contributions.}
 \begin{enumerate}
-  \item An audit protocol for personal-baseline detectors: matched alarm rate, variability terciles, two definitions of equal treatment (the same change in personal standard deviations, and the same change in steps), pre-set margins, and bootstrap intervals over users.
-  \item Simulation results. The fixed threshold treats the groups unequally. The three personal detectors show no meaningful gap in delay or detection at a change of one personal standard deviation, in any of 20 simulator settings, but they detect an absolute change in steps later in variable users.
+  \item An audit protocol for personal-baseline detectors: matched alarm rate, variability terciles, two definitions of equal treatment (the same change in personal standard deviations, and the same change in steps), margins stated in the analysis plan, and bootstrap intervals over users.
+  \item Simulation results, expected in direction and new in size and stability. The fixed threshold treats the groups unequally. The three personal detectors show no meaningful gap in delay or detection at a change of one personal standard deviation, in any of 20 simulator settings, but they detect an absolute change in steps later in variable users.
   \item A detector family whose scale mixes own and population variability (weight $\lambda$). It moves the gaps between the two definitions of equal treatment, with a balanced setting in the base simulation. That setting is not stable: it disappears when the users' variability is very spread out. We report this as a tuning trade-off, not as a new method.
-  \item A small check on 51 users of the open LifeSnaps data. Most comparisons are uninformative. One result is not explained by anything we simulated (\cref{sec:ls}).
+  \item A small check on 51 users of the open LifeSnaps data, 17 per group. Most comparisons are uninformative. One result, the CUSUM alarm-rate gap, is not explained by anything we simulated (\cref{sec:ls}).
 \end{enumerate}
 
 \paragraph{What this paper is not.}
@@ -144,11 +141,11 @@ Each series receives one downward level shift from an onset day drawn uniformly 
 We measure (i) the \emph{alarm rate}: alarm episodes per 100 user-days on series without a change; (ii) the \emph{delay}: days from onset to the first alarm on or after onset, censored at 14 days, summarised by its mean (restricted mean delay); (iii) \emph{detection within 14 days}: the share of series with an alarm in the first 14 days. Values are averaged over a user's replicates first, so the user is the unit of analysis.
 
 \subsection{Gaps, margins and verdicts}
-The gap is the group mean in the high tercile minus that in the low tercile. Intervals are 95\% percentile bootstrap intervals (1000 resamples of users within terciles; the frozen plan said 2000, see \cref{sec:reproducibility}).
-A gap is called \emph{meaningful} if its interval excludes zero and the gap exceeds the margin; \emph{negligible} if the whole interval lies inside the margin; \emph{inconclusive} otherwise. These labels describe the interval; they are not tests. ``Meaningful'' does not show that the true gap exceeds the margin, only that the interval excludes zero and the estimate lies beyond the margin. Verdicts use unrounded values. The margins are 1.0 alarm per 100 user-days (30\% of the pooled target), 1.5 days of delay, and 0.10 in the share detected within 14 days. They are judgement calls, not derived from any user or clinical need; they were proposed in the plan before the first run and confirmed unchanged after it.
+The gap is the group mean in the high tercile minus that in the low tercile. Intervals are 95\% percentile bootstrap intervals (1000 resamples of users within terciles; the plan said 2000, see \cref{app:timeline}).
+A gap is called \emph{meaningful} if its interval excludes zero and the gap exceeds the margin; \emph{negligible} if the whole interval lies inside the margin; \emph{inconclusive} otherwise. These labels describe the interval; they are not tests. ``Meaningful'' does not show that the true gap exceeds the margin, only that the interval excludes zero and the estimate lies beyond the margin. Verdicts use unrounded values. The margins are 1.0 alarm per 100 user-days (30\% of the pooled target), 1.5 days of delay, and 0.10 in the share detected within 14 days. They are judgement calls, not derived from any user or clinical need; they were proposed in the analysis plan before the first run and confirmed unchanged after it.
 
-\subsection{Pre-specification}
-The analysis plan was committed to a git repository before the first result, and the plan for the real-data check was committed before the data were opened. Every later experiment, other than diagnostics labelled post hoc, was described with its decision rule in a dated amendment to the plan before it was run, and the results were appended afterwards. Those amendments were committed together with their results, so the order rests on the dated text and not on commit order. This is a plan kept in a version-controlled repository, not a registration with an independent registry. Post hoc analyses are labelled as such here and in \cref{sec:reproducibility}.
+\subsection{Analysis plan}\label{sec:plan}
+The analysis plan was written before the runs and kept, with dated amendments, in the project's git repository; the plan for the real-data check was written before the data were opened. Later experiments were described with their decision rules in amendments before they were run. This is a plan kept by the author in a version-controlled repository, not a registration with an independent registry, and commit times are not an external time stamp. Some analyses were added after earlier results were known; these are labelled as post hoc where they occur, and \cref{app:timeline} lists every deviation from the plan.
 
 \section{Simulation study}\label{sec:sim}
 Following ADEMP \citep{morris2019}:
@@ -177,7 +174,7 @@ No detector in this set treats both definitions alike. That is not a defect of a
 \begin{figure}[t]
   \centering
   \includegraphics[width=\linewidth]{figures/fig_audit.pdf}
-  \caption{Gaps (high minus low variability tercile) with 95\% intervals in the base simulation; same data as \cref{tab:audit}. Shading is the margin set before the first run. Squares: meaningful; circles: negligible (interval inside the margin); open diamond: inconclusive.}
+  \caption{Gaps (high minus low variability tercile) with 95\% intervals in the base simulation; same data as \cref{tab:audit}. Shading is the margin. Squares: meaningful; circles: negligible (interval inside the margin); open diamond: inconclusive.}
   \label{fig:audit}
 \end{figure}
 
@@ -194,7 +191,7 @@ As $\lambda$ rises, the alarm-rate gap falls from \LamSdZeroAlarm{} to \LamSdOne
 At $\lambda=0.75$ the three gaps are all inside their margins as point estimates: alarm \LamSdThreeQuartersAlarmCI, delay at one SD \LamSdThreeQuartersRmdStdCI{} and at 1000 steps \LamSdThreeQuartersRmdAbsCI{} days; the intervals of the alarm and absolute-delay gaps extend past their margins, so none of the three is called negligible.
 The robust scale narrows the delay gaps but leaves a larger alarm-rate gap at the same $\lambda$ (at $\lambda=0.75$: \LamMadThreeQuartersAlarm{} against \LamSdThreeQuartersAlarm).
 
-\paragraph{The pre-set trade-off criterion was not met.}
+\paragraph{The trade-off criterion set in the plan was not met.}
 Our plan asked whether the gap under the absolute definition grows in size from $\lambda=0$ to $\lambda=1$ by more than 1.5 days while the gap under the standardised definition shrinks by more than 1.5 days. The second holds (the standardised gap goes from \LamSdZeroRmdStd{} to \LamSdOneRmdStd{} days); the first does not: the absolute gap goes from \LamSdZeroRmdAbs{} to \LamSdOneRmdAbs{} days, so it changes sign and its size shrinks instead of growing by more than 1.5. What the data show is a \emph{crossing}, not the trade-off we anticipated. We describe it after the fact and test its robustness in the next section with criteria written before that run.
 
 \begin{figure}[t]
@@ -224,7 +221,7 @@ The reading is: the audit finding R1 is robust in this simulator; the crossing h
 \end{figure}
 
 \subsection{Does the scale of the z-score matter?}\label{sec:fixedscale}
-The z-score divides by the moving SD of the 21 days before the last week, whereas EWMA and CUSUM use the SD of the baseline. To see whether the z-score's pattern depends on that choice, we ran a version, $\mathrm{z}_0$, that divides the same window difference by the baseline SD $s_0$. This check was added after all other results were known, in response to a reader's question; its plan, with three predictions, was committed before it was run (\cref{app:timeline}). It was run in the base simulation and in the simulation with missing days.
+The z-score divides by the moving SD of the 21 days before the last week, whereas EWMA and CUSUM use the SD of the baseline. To see whether the z-score's pattern depends on that choice, we ran a version, $\mathrm{z}_0$, that divides the same window difference by the baseline SD $s_0$. This check was added after all other results were known, in response to a reader's question; its plan, with three predictions, was written down before it was run (\cref{app:timeline}). It was run in the base simulation and in the simulation with missing days.
 All three predictions held in both scenarios. $\mathrm{z}_0$ shows no meaningful delay or detection gap at one personal SD (delay gap \FsRealRmdStdCI{} days in the base case and \FsMissRmdStdCI{} with missing days); its alarm-rate gap is \FsRealAlarmVerdict{} in both (\FsRealAlarmCI{} and \FsMissAlarmCI{}); and it is slower for variable users when every user loses 1000 steps (\FsRealRmdAbsCI{} and \FsMissRmdAbsCI{} days), as the moving-scale z-score is (\cref{tab:fixedscale}). In these two scenarios the z-score's pattern therefore does not depend on which of the two scales it uses. The CUSUM alarm-rate gap (\RealCusumAlarmCI{} in the base case) is not reproduced by $\mathrm{z}_0$, so the use of a baseline scale is not what produces it.
 
 \input{tables/fixedscale.tex}
@@ -243,13 +240,13 @@ The high-variability tercile has lower median daily steps, a larger share of day
 \begin{itemize}
   \item \textbf{Fixed threshold.} The real alarm-rate gap is \LsFixedAlarmCI{} against \LsFixedAlarmSim{} simulated, so the simulated gap is outside the interval. The direction agrees.
   \item \textbf{Personal z-score and EWMA.} Every interval contains zero and the simulated gap, with one exception: the EWMA detection gap for a 1000-step change (\LsEwmaDetAbsCI) is meaningful, as it is in simulation (\LsEwmaDetAbsSim).
-  \item \textbf{CUSUM stands out.} The real alarm-rate gap is \LsCusumAlarmCI{} against \LsCusumAlarmSim{} simulated, and the delay gap for one personal SD, \LsCusumRmdStdCI{} days, is by the pre-set rule just meaningful: the point estimate (\LsCusumRmdStdExact{} before rounding) is barely above the 1.5-day margin and the interval's lower end is close to zero (\LsCusumRmdStdSim{} simulated). The upper end of the alarm-rate interval lies close to the most negative simulated gap in any setting (\cref{sec:robust}), so this is a difference in the point estimate, with a wide interval, and not a firm contradiction of the simulator.
+  \item \textbf{CUSUM stands out.} The real alarm-rate gap is \LsCusumAlarmCI{} against \LsCusumAlarmSim{} simulated, and the delay gap for one personal SD, \LsCusumRmdStdCI{} days, is by the verdict rule just meaningful: the point estimate (\LsCusumRmdStdExact{} before rounding) is barely above the 1.5-day margin and the interval's lower end is close to zero (\LsCusumRmdStdSim{} simulated). The upper end of the alarm-rate interval lies close to the most negative simulated gap in any setting (\cref{sec:robust}), so this is a difference in the point estimate, with a wide interval, and not a firm contradiction of the simulator.
 \end{itemize}
 In an exploratory run on log steps (post hoc), the simulated CUSUM alarm gap vanishes (\LsLogCusumAlarmSim{}) but the real one does not (\LsLogCusumAlarmCI{}; EWMA \LsLogEwmaAlarmCI{}, simulated \LsLogEwmaAlarmSim), while the CUSUM delay gaps disappear (\LsLogCusumRmdStdCI{} days at one SD). The skewness explanation from the simulator therefore does not explain the real alarm-rate gap. A simulated slow drift away from the baseline, tested with a rule set in advance, did not produce it either (\cref{app:drift}). Keeping zero-step days as observed (\LsZeroEligible{} eligible users) gave \LsZeroConsistent{} of \LsZeroCells{} consistent cells, \LsZeroInformative{} informative, and a CUSUM alarm gap of \LsZeroCusumAlarmCI.
 We have not tested the remaining candidates: real changes in the series counted as alarms, wear-time and routine differences tied to variability, and chance with 17 users per group.
 
 \subsection{Tuning on the same users}\label{sec:crossfit}
-A reader pointed out that the constants were tuned on the same users whose gaps are evaluated. We therefore added a cross-fitted version after all other results were known; its plan, with two predictions, was committed before it was run (\cref{app:timeline}). Users were split into two folds, at random within each variability tercile (\CfFoldA{} and \CfFoldB{} users). Each detector's constant was tuned to 3.33 per 100 user-days on the users of one fold and applied to the users of the other, and the gaps were computed over all users as before (\cref{tab:crossfit}).
+A reader pointed out that the constants were tuned on the same users whose gaps are evaluated. We therefore added a cross-fitted version after all other results were known; its plan, with two predictions, was written down before it was run (\cref{app:timeline}). Users were split into two folds, at random within each variability tercile (\CfFoldA{} and \CfFoldB{} users). Each detector's constant was tuned to 3.33 per 100 user-days on the users of one fold and applied to the users of the other, and the gaps were computed over all users as before (\cref{tab:crossfit}).
 Both predictions held. No cell that was meaningful in sample changed sign (\CfRealKeepSign{} of \CfRealN), and the CUSUM alarm-rate gap stayed large (\CfCusumAlarmCI{} against \LsCusumAlarmCI{} in sample). Verdicts that sit at a margin are not stable, however: \CfVerdictChanges{} of the \CfCells{} verdicts change. The CUSUM delay gap at one personal SD becomes \CfCusumRmdStdCI{} days and is no longer beyond the 1.5-day margin; the EWMA gap in detection within 14 days at 1000 steps (\CfEwmaDetAbsCI) becomes inconclusive; and the z-score gap in the same measure (\CfZscoreDetAbsCI) becomes meaningful. Among the other \CfOtherN{} cells, \CfOtherFlips{} changes sign (a gap near zero). Pooled alarm rates in the held-out folds ranged from \CfPooledMin{} to \CfPooledMax{} per 100 user-days. Constants estimated on about 25 users are noisy, so this check does not turn the LifeSnaps check into an out-of-sample validation; it shows that the sign of the large gaps does not come from tuning on the same users.
 
 \input{tables/lifesnaps_terciles.tex}
@@ -286,15 +283,13 @@ First, report operating characteristics by variability group, not only pooled: p
 The natural next step is a dataset with labelled events (for example illness onsets) and several signals such as heart rate and sleep, to measure delay on real changes and to test the same audit per person rather than per tercile. Adaptive baselines that follow slow drift \citep{gama2014} should be audited in the same way.
 
 \FloatBarrier
-\section{Reproducibility, pre-specification and deviations}\label{sec:reproducibility}
+\section{Reproducibility}\label{sec:reproducibility}
 \paragraph{Code and results.}
 All simulation code, the dated plans, and every result file are in \repo{} (directory \texttt{pilot/}); the results reported here are at commit \commit{}, and the repository is archived on Zenodo as \zenodoDOI. The tables and figures of this paper are generated from the result files by scripts in \texttt{paper/scripts/}, and every number in the text is a macro defined from those files. No special hardware is needed.
 \paragraph{Data.}
 LifeSnaps is public under CC BY 4.0 \citep{lifesnaps_zenodo}. The data files are not redistributed in the repository; only code and aggregated results are. We did not try to identify any participant.
-\paragraph{Plans and timing.}
-\Cref{app:timeline} lists the commits. Three plans were committed before their results: the analysis plan (before the simulator and the first results), the LifeSnaps plan (before the data were opened) and, after the first full draft of this paper, the plan for two further checks (\cref{sec:fixedscale,sec:crossfit}). The other experiments were written into dated amendments before they were run, but each amendment was committed together with its results.
-\paragraph{Deviations and post hoc elements.}
-(i) The two diagnostic scenarios (log steps, symmetric noise) were added after the first run to examine the CUSUM alarm gap. (ii) The pre-set trade-off criterion was not met; the ``crossing'' description is post hoc, and its robustness criteria R1--R3 were fixed before the sensitivity run. (iii) The log-scale run on LifeSnaps was added after seeing the first LifeSnaps result. (iv) The drift scenarios were planned in response to the LifeSnaps result; the hypothesis was not supported. (v) One prediction for the combined settings was wrong. (vi) Commit times come from the author's computer and are not an external time stamp. (vii) The frozen plan specified 2000 bootstrap resamples; all reported runs used 1000. Later amendments state the number 1000 but none noted that it differs from the plan; we noticed this after the first full draft. We therefore re-ran every simulated analysis and both LifeSnaps runs with 10\,000 resamples (same data and seeds; \texttt{pilot/results\_mc/}). In all \McFiles{} result files the point estimates were identical. Of \McWithVerdict{} verdicts \McChanges{} changed, all of them marginal cells (listed in \texttt{pilot/results\_mc/mc\_check\_changes.csv}), and no interval end moved by more than \McSimMaxShift{} in the simulations or \McLsMaxShift{} on LifeSnaps. The reported intervals and verdicts are the 1000-resample ones. (viii) The fixed-scale z-score and the cross-fitted tuning were added after all other results were known, in response to comments on a draft; their plan was committed first and all of their predictions held.
+\paragraph{Deviations from the plan.}
+Several analyses were added after earlier results were seen, one of them in response to a real-data result, and the bootstrap used 1000 instead of the planned 2000 resamples (a re-run with 10\,000 changes no point estimate and \McChanges{} of \McWithVerdict{} verdicts). \Cref{app:timeline} lists all deviations, post hoc elements and commit times.
 
 \bibliographystyle{plainnat}
 \bibliography{references}
@@ -325,7 +320,12 @@ Fixed $T=1450$ steps, z-score $c=0.584$, EWMA $L=1.29$, CUSUM $h=1.53$; pooled a
 \input{tables/drift.tex}
 The hypothesis written before this run was that a slow drift away from the baseline would make the EWMA and CUSUM alarm-rate gaps fall below $-1.0$ with a z-score gap inside the margin, in both ``drift'' and ``drift\_log''. In ``drift'' CUSUM passes (\DriftCusum) and EWMA does not (\DriftEwma); in ``drift\_log'' neither does (\DriftLogCusum{} and \DriftLogEwma). The hypothesis is not supported; the real-data gap stays unexplained.
 
-\section{Timeline of plans and results}\label{app:timeline}
+\section{Plans, deviations and timeline}\label{app:timeline}
+\paragraph{Plans and timing.}
+The table below lists the commits. Three plans were committed before their results: the analysis plan (before the simulator and the first results), the LifeSnaps plan (before the data were opened) and, after the first full draft of this paper, the plan for two further checks (\cref{sec:fixedscale,sec:crossfit}). The other experiments were written into dated amendments before they were run, but each amendment was committed together with its results.
+\paragraph{Deviations and post hoc elements.}
+(i) The two diagnostic scenarios (log steps, symmetric noise) were added after the first run to examine the CUSUM alarm gap. (ii) The trade-off criterion set in the plan was not met; the ``crossing'' description is post hoc, and its robustness criteria R1--R3 were fixed before the sensitivity run. (iii) The log-scale run on LifeSnaps was added after seeing the first LifeSnaps result. (iv) The drift scenarios were planned in response to the LifeSnaps result; the hypothesis was not supported. (v) One prediction for the combined settings was wrong. (vi) Commit times come from the author's computer and are not an external time stamp. (vii) The frozen plan specified 2000 bootstrap resamples; all reported runs used 1000. Later amendments state the number 1000 but none noted that it differs from the plan; we noticed this after the first full draft. We therefore re-ran every simulated analysis and both LifeSnaps runs with 10\,000 resamples (same data and seeds; \texttt{pilot/results\_mc/}). In all \McFiles{} result files the point estimates were identical. Of \McWithVerdict{} verdicts \McChanges{} changed, all of them marginal cells (listed in \texttt{pilot/results\_mc/mc\_check\_changes.csv}), and no interval end moved by more than \McSimMaxShift{} in the simulations or \McLsMaxShift{} on LifeSnaps. The reported intervals and verdicts are the 1000-resample ones. (viii) The fixed-scale z-score and the cross-fitted tuning were added after all other results were known, in response to comments on a draft; their plan was committed first and all of their predictions held.
+
 \begin{table}[H]
 \centering\small
 \caption{Plan and result commits in the repository (times are the commit times recorded by git, in UTC). ``Plan'' means the experiment and its decision rule were written down before it was run.}
@@ -333,13 +333,13 @@ The hypothesis written before this run was that a slow drift away from the basel
 \toprule
 Date, time & Commit & Content \\
 \midrule
-2026-10-25 18:23 & \texttt{9e57708} & Frozen analysis plan (before any run) \\
+2026-10-25 18:23 & \texttt{9e57708} & Analysis plan (written before the first run) \\
 2026-10-25 18:24 & \texttt{ee6b222} & Simulator, four detectors, first results \\
 2026-10-25 18:30 & \texttt{dc8b5bf} & Skewness diagnostics (post hoc); margins confirmed \\
 2026-10-25 18:37 & \texttt{c70e461} & Missing-day and short-window scenarios (plan, then results) \\
 2026-10-25 18:43 & \texttt{28e7c86} & Mixed-scale (shrinkage) experiment (plan, then results) \\
 2026-10-25 18:44 & \texttt{ac2c335} & Trade-off figure \\
-2026-10-25 18:51 & \texttt{ac26c93} & Frozen LifeSnaps plan (before the data were opened) \\
+2026-10-25 18:51 & \texttt{ac26c93} & LifeSnaps plan (written before the data were opened) \\
 2026-10-25 18:54 & \texttt{9e8684d} & LifeSnaps consistency check \\
 2026-10-26 19:41 & \texttt{3d99ab8} & Log-scale LifeSnaps run (post hoc) \\
 2026-10-26 19:44 & \texttt{0fef6f7} & Drift scenarios (plan, then results; not supported) \\

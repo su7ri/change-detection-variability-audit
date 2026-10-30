@@ -2,7 +2,7 @@
 
 Run:  python scripts/build_figures.py
 Colours: validated categorical pair (blue, orange); marker shape and fill carry the same information,
-so the figures stay readable in greyscale. Margin bands are the pre-set margins of the analysis plan.
+so the figures stay readable in greyscale. Margin bands are the margins of the analysis plan.
 """
 from __future__ import annotations
 
@@ -134,7 +134,7 @@ def fig_audit():
     handles = [Line2D([], [], marker="s", color=ORANGE, mfc=ORANGE, ls="", ms=5, label="meaningful"),
                Line2D([], [], marker="o", color=BLUE, mfc=BLUE, ls="", ms=5, label="negligible (interval inside margin)"),
                Line2D([], [], marker="D", color=GREY, mfc="white", ls="", ms=5, label="inconclusive"),
-               matplotlib.patches.Patch(facecolor=BAND, label="pre-set margin")]
+               matplotlib.patches.Patch(facecolor=BAND, label="margin")]
     fig.legend(handles=handles, loc="lower center", ncol=4, frameon=False, bbox_to_anchor=(0.5, -0.12))
     fig.tight_layout(w_pad=0.8)
     save(fig, "fig_audit")
@@ -172,7 +172,7 @@ def fig_lambda():
     axes[2].set_xlabel("")
     handles = [Line2D([], [], marker="o", color=BLUE, mfc=BLUE, ms=4.5, label="change of 1 personal SD"),
                Line2D([], [], marker="s", color=ORANGE, mfc="white", ms=4.5, label="change of 1000 steps"),
-               matplotlib.patches.Patch(facecolor=BAND, label="pre-set margin")]
+               matplotlib.patches.Patch(facecolor=BAND, label="margin")]
     fig.legend(handles=handles, loc="lower center", ncol=3, frameon=False, bbox_to_anchor=(0.5, -0.17))
     fig.tight_layout(w_pad=0.8)
     save(fig, "fig_lambda")
@@ -221,7 +221,7 @@ def fig_sensitivity():
                Line2D([], [], marker="o", color=INK2, mfc=INK2, ls="", ms=3.2, label="z-score"),
                Line2D([], [], marker="^", color=INK2, mfc=INK2, ls="", ms=3.2, label="EWMA"),
                Line2D([], [], marker="D", color=INK2, mfc=INK2, ls="", ms=3.2, label="CUSUM"),
-               matplotlib.patches.Patch(facecolor=BAND, label="pre-set margin")]
+               matplotlib.patches.Patch(facecolor=BAND, label="margin")]
     fig.legend(handles=handles, loc="lower center", ncol=6, frameon=False, bbox_to_anchor=(0.5, -0.045), columnspacing=1.2, handletextpad=0.3)
     fig.tight_layout(w_pad=0.6)
     save(fig, "fig_sensitivity")
@@ -258,7 +258,7 @@ def fig_lifesnaps():
     handles = [Line2D([], [], marker="o", color=BLUE, mfc=BLUE, ms=4.5, label="real users, raw steps (95% interval)"),
                Line2D([], [], marker="D", color=ORANGE, mfc=ORANGE, ls="", ms=4.5, label="simulation (missing days)"),
                Line2D([], [], marker="o", color=GREY, mfc="white", ms=4.0, label="real users, detectors on log steps (exploratory)"),
-               matplotlib.patches.Patch(facecolor=BAND, label="pre-set margin")]
+               matplotlib.patches.Patch(facecolor=BAND, label="margin")]
     fig.legend(handles=handles, loc="lower center", ncol=2, frameon=False, bbox_to_anchor=(0.5, -0.17), columnspacing=1.5)
     fig.tight_layout(w_pad=0.8)
     save(fig, "fig_lifesnaps")

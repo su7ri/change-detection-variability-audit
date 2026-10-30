@@ -1,6 +1,6 @@
 # arXiv submission checklist
 
-Paper: *Do personal-baseline change detectors treat steady and variable users equally?* (24 pages, A4).
+Paper: *Do personal-baseline change detectors treat steady and variable users equally?* (25 pages, A4).
 Author line in the paper: Soroush Azarinejadianlangroudi, Independent researcher (see decision 1).
 Target: arXiv/Zenodo preprint by **20 December 2026**. Exeter EPSRC DLA closes **8 December 2026, noon**
 (repository plus 2-page summary by 5 December), so the repository, not the preprint, is the first deadline.
@@ -13,9 +13,9 @@ Target: arXiv/Zenodo preprint by **20 December 2026**. Exeter EPSRC DLA closes *
 | 2 | AI-assistance statement | none in the paper | arXiv has said it will ban authors for a year when unchecked AI output is clear-cut negligence, for example references to sources that do not exist. Whether and how you state AI use is your decision; what is not optional is that you have checked everything yourself (point 3 below). |
 | 3 | References | all 19 entries were checked against the publisher, Crossref-type or preprint-server record while writing; fields I could not confirm are left out | Open every DOI in section D yourself before you submit. This takes about 20 minutes and removes the one risk that can cost a year. |
 | 4 | Repository | `change-detection-variability-audit` (new, only `pilot/` and `paper/`) | The older report repository `evoki-drift-eval` is untouched and is not cited in the paper. The commit hashes in the paper are those of the new repository (history rewritten from the pilot commits; dates and messages unchanged). |
-| 5 | Wording about pre-registration | "pre-specified", "dated plans" | Three plans were committed before their results: the analysis plan (`9e57708`), the LifeSnaps plan (`ac26c93`) and the plan for the two checks added after a reader's comments (`5e57f66`, 29 October 2026). Every other amendment was committed together with its results. The paper says so (Sections 3.6 and 8, Appendix E). The bootstrap departure (frozen plan 2000 resamples, reported runs 1000) was found on 29 October and is disclosed in `pilot/ANALYSIS_PLAN.md` (commit `fccc209`) and in Section 8; the 10000-resample re-run is in `pilot/results_mc/` and changes 3 of 3024 verdicts. Do not shorten it to "pre-registered": there is no external registry. |
+| 5 | Wording about pre-registration | "analysis plan written before the runs", "dated plans" | Three plans were committed before their results: the analysis plan (`9e57708`), the LifeSnaps plan (`ac26c93`) and the plan for the two checks added after a reader's comments (`5e57f66`, 29 October 2026). Every other amendment was committed together with its results. The paper says so briefly in Sections 3.6 and 8; the full list of deviations and the commit times are in Appendix E. The paper no longer calls the work "pre-specified": it says "an analysis plan written before the runs". The bootstrap departure (frozen plan 2000 resamples, reported runs 1000) was found on 29 October and is disclosed in `pilot/ANALYSIS_PLAN.md` (commit `fccc209`) and in Section 8; the 10000-resample re-run is in `pilot/results_mc/` and changes 3 of 3024 verdicts. Do not shorten it to "pre-registered": there is no external registry. |
 | 6 | Licence | not chosen | arXiv asks you to pick one at upload. CC BY 4.0 is the usual choice for a preprint. The repository already has an MIT `LICENSE` for the code, so the two do not conflict. |
-| 7 | Wording in old commit messages | unchanged | Commits `5a41316` and `69bb607` say "pre-registered" in their messages. The paper deliberately says "dated plans" (decision 5). Do not rewrite history; if someone asks, point to Appendix E. |
+| 7 | Wording in old commit messages | unchanged | Commits `5a41316` and `69bb607` say "pre-registered" in their messages. The paper deliberately says "dated plans" and "analysis plan written before the runs" (decision 5). Do not rewrite history; if someone asks, point to Appendix E. |
 
 ## B. Before you upload
 
@@ -34,10 +34,10 @@ Target: arXiv/Zenodo preprint by **20 December 2026**. Exeter EPSRC DLA closes *
 
 * **Account and endorsement.** arXiv requires an endorsement before a first submission and for each new category. An institutional email address alone does not do it: it helps only if you have also claimed authorship of a paper on arXiv. Otherwise you need a personal endorser, an established arXiv author in the category. Start the submission first and choose the category; arXiv then gives you an endorsement-request link to send. On the abstract page of related arXiv papers, "Which authors of this paper are endorsers?" shows who qualifies. Write to one or two suitable people with a short message and the PDF. Do not mass-mail endorsers (arXiv says so explicitly).
 * **Category.** Primary `stat.AP` (statistics, applications). Optional cross-lists: `stat.ME`, `cs.LG`. The primary category decides whose endorsement you need, so choose the one where you can find an endorser; the paper fits `stat.AP` best.
-* **Upload** `arxiv_source.zip` (top-level `main.tex` with `\documentclass`, `numbers.tex`, `main.bbl`, `tables/`, `figures/`). Figures are PDF (pdfLaTeX). File names use only letters, digits and `_ + - . , =`. I compiled the zip in a clean folder with `pdflatex` twice: 24 pages, no undefined references. The arXiv preview must show the same.
+* **Upload** `arxiv_source.zip` (top-level `main.tex` with `\documentclass`, `numbers.tex`, `main.bbl`, `tables/`, `figures/`). Figures are PDF (pdfLaTeX). File names use only letters, digits and `_ + - . , =`. I compiled the zip in a clean folder with `pdflatex` twice: 25 pages, no undefined references. The arXiv preview must show the same.
 * **Title** (plain text, no LaTeX): `Do personal-baseline change detectors treat steady and variable users equally?`
-* **Abstract** (plain text, 1634 characters; the limit is 1920; no word "Abstract"): see `abstract_plain.txt`. Paste it as one paragraph.
-* **Comments:** `24 pages, 5 figures, 16 tables. Code and results: https://github.com/su7ri/change-detection-variability-audit` (add the Zenodo DOI once you have it).
+* **Abstract** (plain text, 1217 characters, five sentences; the limit is 1920; no word "Abstract"): see `abstract_plain.txt`. Paste it as one paragraph.
+* **Comments:** `25 pages, 5 figures, 16 tables. Code and results: https://github.com/su7ri/change-detection-variability-audit` (add the Zenodo DOI once you have it).
 * **Authors:** `Soroush Azarinejadianlangroudi` (same spelling as in the paper). An ORCID iD is optional and free (orcid.org); if you create one, link it in your arXiv account profile, not in the paper.
 * **MSC/ACM class, journal ref, DOI:** leave empty.
 * Submissions received before 14:00 Eastern are normally announced at 20:00 Eastern the same day. Before announcement you can unsubmit and fix; afterwards use *replace*, not a new submission.
@@ -73,7 +73,13 @@ Three statements in the Related-work section rest on what the sources say, so re
 (c) Tolosa et al. mark a drift day when a composite of per-user rolling z-scores of Fitbit and phone data exceeds a participant-specific quantile threshold, judge it against proxy labels derived from the same rolling baselines with precision, recall and AUC, and (as far as I could see) do not study detection delay by variability group. Read the paper and correct our description if it is wrong.
 The sentence "We did not find in our searches an evaluation of how the alarm rate and detection delay of such detectors depend on a person's own variability" is a statement about my searches, not a proof; if you or your supervisor know of such a paper, add it and soften the first contribution accordingly.
 
-## E. What the paper does not claim (keep it that way if you edit)
+## E. How to describe the result in emails, the DLA summary and the arXiv comments
+
+* Write every simulated result as a simulated result: "in simulation, a fixed threshold gives variable users about 3 more alarms per 100 user-days"; never "variable users get more alarms".
+* The real-data part in one sentence: "a check on 51 users of the open LifeSnaps data (17 per group) is mostly inconclusive, and one CUSUM result there is unexplained".
+* The contribution is the audit protocol and the explicit choice between two definitions of equal treatment, not the fixed-threshold result, which is predictable from the algebra. Say "audit", not "new method", and "analysis plan written before the runs", not "pre-registered".
+
+## F. What the paper does not claim (keep it that way if you edit)
 
 * It is an audit of existing detectors, not a new method; the mixed-scale family is a secondary, post hoc description.
 * The main evidence is simulated. The LifeSnaps check has 51 users (17 per group) and most comparisons are uninformative.
