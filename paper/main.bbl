@@ -40,8 +40,9 @@ Cynthia Dwork, Moritz Hardt, Toniann Pitassi, Omer Reingold, and Richard Zemel.
 C.~G. Fraser and E.~K. Harris.
 \newblock Generation and application of data on biological variation in
   clinical chemistry.
-\newblock \emph{Critical Reviews in Clinical Laboratory Sciences}, 27:\penalty0
-  409--437, 1989.
+\newblock \emph{Critical Reviews in Clinical Laboratory Sciences}, 27\penalty0
+  (5):\penalty0 409--437, 1989.
+\newblock \doi{10.3109/10408368909106595}.
 
 \bibitem[Gama et~al.(2014)Gama, {\v Z}liobait{\.e}, Bifet, Pechenizkiy, and
   Bouchachia]{gama2014}
@@ -98,7 +99,8 @@ E.~S. Page.
 \bibitem[Roberts(1959)]{roberts1959}
 S.~W. Roberts.
 \newblock Control chart tests based on geometric moving averages.
-\newblock \emph{Technometrics}, 1:\penalty0 239--250, 1959.
+\newblock \emph{Technometrics}, 1\penalty0 (3):\penalty0 239--250, 1959.
+\newblock \doi{10.2307/1266443}.
 
 \bibitem[Royston and Parmar(2013)]{royston2013}
 P.~Royston and M.~K.~B. Parmar.

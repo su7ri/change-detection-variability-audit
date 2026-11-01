@@ -47,7 +47,7 @@ Target: arXiv/Zenodo preprint by **20 December 2026**. Exeter EPSRC DLA closes *
 | Key | Entry | Link |
 |---|---|---|
 | page1954 | Page, Biometrika 41, 1954 | https://doi.org/10.1093/biomet/41.1-2.100 |
-| roberts1959 | Roberts, Technometrics 1, 1959 (no DOI printed) | search "Control chart tests based on geometric moving averages" |
+| roberts1959 | Roberts, Technometrics 1(3), 1959 (checked: JSTOR 1 Nov) | https://doi.org/10.2307/1266443 |
 | hawkins1987 | Hawkins, The Statistician 36, 1987 | https://doi.org/10.2307/2348827 |
 | gama2014 | Gama et al., ACM Computing Surveys 46(4), 2014 | https://doi.org/10.1145/2523813 |
 | aminikhanghahi2017 | Aminikhanghahi and Cook, KAIS 51, 2017 | https://doi.org/10.1007/s10115-016-0987-z |
@@ -58,7 +58,7 @@ Target: arXiv/Zenodo preprint by **20 December 2026**. Exeter EPSRC DLA closes *
 | yfantidou2022 | Yfantidou et al., Sci. Data 9, 2022 | https://doi.org/10.1038/s41597-022-01764-x |
 | lifesnaps_zenodo | LifeSnaps, Zenodo v4 | https://doi.org/10.5281/zenodo.7229547 |
 | smyth2004 | Smyth, SAGMB 3(1), 2004 | https://doi.org/10.2202/1544-6115.1027 |
-| fraser1989 | Fraser and Harris, Crit. Rev. Clin. Lab. Sci. 27, 1989 (no DOI printed) | search the title |
+| fraser1989 | Fraser and Harris, Crit. Rev. Clin. Lab. Sci. 27(5), 1989 (checked: PubMed 1 Nov) | https://doi.org/10.3109/10408368909106595 |
 | dwork2011 | Dwork et al., arXiv:1104.3913 | https://arxiv.org/abs/1104.3913 |
 | morris2019 | Morris, White, Crowther, Stat. Med. 38, 2019 | https://doi.org/10.1002/sim.8086 |
 | siepe2024 | Siepe et al., Psychological Methods, advance online publication | https://doi.org/10.1037/met0000695 (check whether volume, issue and pages exist now; if so, add them to `references.bib` and rebuild) |
@@ -67,7 +67,7 @@ Target: arXiv/Zenodo preprint by **20 December 2026**. Exeter EPSRC DLA closes *
 | royston2013 | Royston and Parmar, BMC Med. Res. Methodol. 13, 2013 | https://doi.org/10.1186/1471-2288-13-152 |
 
 Three statements in the Related-work section rest on what the sources say, so read them once in the originals:
-(a) the medRxiv version of Alavi et al. uses an alert rule with a fixed offset above each person's own baseline and says some individuals have a very unstable baseline;
+(a) Alavi et al. (Nature Medicine 2022; checked by you on 1 Nov, NightSignal rule with fixed offsets of 3 and 4 beats per minute above the baseline, and "some of these individuals have an unstable baseline" in the Discussion);
 (b) Moreno-Muñoz et al. detect changes in smartphone data with a hierarchical circadian model, motivated by relapse detection in psychiatric patients;
 (c) Tolosa et al. mark a drift day when a composite of per-user rolling z-scores of Fitbit and phone data exceeds a participant-specific quantile threshold, judge it against proxy labels derived from the same rolling baselines with precision, recall and AUC, and (as far as I could see) do not study detection delay by variability group. Read the paper and correct our description if it is wrong.
 The sentence "We did not find in our searches an evaluation of how the alarm rate and detection delay of such detectors depend on a person's own variability" is a statement about my searches, not a proof; if you or your supervisor know of such a paper, add it and soften the first contribution accordingly.
