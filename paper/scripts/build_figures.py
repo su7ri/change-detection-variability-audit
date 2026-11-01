@@ -85,7 +85,7 @@ def fig_example():
     sd0 = sim.baseline_sd(x)[:, 0]
     mean0 = x[:, 0, :28].mean(-1)
     fig, axes = plt.subplots(1, 2, figsize=(6.5, 2.0), sharey=True)
-    titles = ["Steady user", "Variable user"]
+    titles = ["Low-variability user", "High-variability user"]
     info = []
     for i, ax in enumerate(axes):
         t = np.arange(84)

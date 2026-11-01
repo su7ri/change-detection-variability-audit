@@ -1,6 +1,6 @@
 # arXiv submission checklist
 
-Paper: *Do personal-baseline change detectors treat steady and variable users equally?* (21 pages, A4).
+Paper: *Do personal-baseline change detectors treat low- and high-variability users equally?* (21 pages, A4).
 Author line in the paper: Soroush Azarinejadianlangroudi, Independent researcher (see decision 1).
 Target: arXiv/Zenodo preprint by **20 December 2026**. Exeter EPSRC DLA closes **8 December 2026, noon**
 (repository plus 2-page summary by 5 December), so the repository, not the preprint, is the first deadline.
@@ -35,8 +35,8 @@ Target: arXiv/Zenodo preprint by **20 December 2026**. Exeter EPSRC DLA closes *
 * **Account and endorsement.** arXiv requires an endorsement before a first submission and for each new category. An institutional email address alone does not do it: it helps only if you have also claimed authorship of a paper on arXiv. Otherwise you need a personal endorser, an established arXiv author in the category. Start the submission first and choose the category; arXiv then gives you an endorsement-request link to send. On the abstract page of related arXiv papers, "Which authors of this paper are endorsers?" shows who qualifies. Write to one or two suitable people with a short message and the PDF. Do not mass-mail endorsers (arXiv says so explicitly).
 * **Category.** Primary `stat.AP` (statistics, applications). Optional cross-lists: `stat.ME`, `cs.LG`. The primary category decides whose endorsement you need, so choose the one where you can find an endorser; the paper fits `stat.AP` best.
 * **Upload** `arxiv_source.zip` (top-level `main.tex` with `\documentclass`, `numbers.tex`, `main.bbl`, `tables/`, `figures/`). Figures are PDF (pdfLaTeX). File names use only letters, digits and `_ + - . , =`. I compiled the zip in a clean folder with `pdflatex` twice: 21 pages, no undefined references. The arXiv preview must show the same.
-* **Title** (plain text, no LaTeX): `Do personal-baseline change detectors treat steady and variable users equally?`
-* **Abstract** (plain text, 1250 characters, five sentences; the limit is 1920; no word "Abstract"): see `abstract_plain.txt`. Paste it as one paragraph.
+* **Title** (plain text, no LaTeX): `Do personal-baseline change detectors treat low- and high-variability users equally?`
+* **Abstract** (plain text, 1272 characters, five sentences; the limit is 1920; no word "Abstract"): see `abstract_plain.txt`. Paste it as one paragraph.
 * **Comments:** `21 pages, 5 figures, 16 tables. Code and results: https://github.com/su7ri/change-detection-variability-audit` (add the Zenodo DOI once you have it).
 * **Authors:** `Soroush Azarinejadianlangroudi` (same spelling as in the paper). An ORCID iD is optional and free (orcid.org); if you create one, link it in your arXiv account profile, not in the paper.
 * **MSC/ACM class, journal ref, DOI:** leave empty.

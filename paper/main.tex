@@ -20,7 +20,7 @@
 \definecolor{linkblue}{RGB}{20,60,140}
 \usepackage[colorlinks=true,linkcolor=linkblue,citecolor=linkblue,urlcolor=linkblue]{hyperref}
 \usepackage[capitalise,noabbrev]{cleveref}
-\hypersetup{pdftitle={Do personal-baseline change detectors treat steady and variable users equally?},pdfauthor={Soroush Azarinejadianlangroudi}}
+\hypersetup{pdftitle={Do personal-baseline change detectors treat low- and high-variability users equally?},pdfauthor={Soroush Azarinejadianlangroudi}}
 
 \setlist{itemsep=2pt,topsep=4pt,parsep=0pt}
 \setlength{\parskip}{3pt}
@@ -33,7 +33,7 @@
 \newcommand{\repo}{\href{https://github.com/su7ri/change-detection-variability-audit}{\nolinkurl{github.com/su7ri/change-detection-variability-audit}}}
 \newcommand{\commit}{\texttt{fccc209}}
 
-\title{Do personal-baseline change detectors treat steady and variable users equally?\\[2pt]
+\title{Do personal-baseline change detectors treat low- and high-variability users equally?\\[2pt]
 \large A simulation audit with a small real-data check}
 \author{Soroush Azarinejadianlangroudi\\ Independent researcher}
 \date{October 2026}
@@ -42,9 +42,9 @@
 \maketitle
 
 \begin{abstract}
-\noindent Monitoring systems for wearables and phones often raise an alarm when a person's behaviour departs from that person's own baseline; we ask whether such alarms treat people with steady and variable routines equally.
+\noindent Monitoring systems for wearables and phones often raise an alarm when a person's behaviour departs from that person's own baseline; we ask whether such alarms treat people with low- and high-variability routines equally.
 We audit four standard detectors (a fixed threshold, a personal z-score, EWMA and CUSUM) on simulated daily step counts, tune them to the same alarm rate, and compare the highest and lowest variability terciles of users on alarm rate and detection delay under two definitions of equal treatment: the same change in personal standard deviations, or the same change in steps.
-In simulation, the fixed threshold gives variable users about 3.3 more alarms per 100 user-days but faster detection; the personal detectors show no delay gap beyond our margin for a change of one personal standard deviation in any of 20 settings, but detect a fixed change in steps 2.3 to 3.2 days later in variable users, so no single scale meets both definitions.
+In simulation, the fixed threshold gives high-variability users about 3.3 more alarms per 100 user-days but faster detection; the personal detectors show no delay gap beyond our margin for a change of one personal standard deviation in any of 20 settings, but detect a fixed change in steps 2.3 to 3.2 days later in high-variability users, so no single scale meets both definitions.
 These findings rest on a simulator whose assumptions we chose; a check on 51 users of the public LifeSnaps data (17 per group) is mostly inconclusive and shows a CUSUM alarm-rate gap larger than any simulated setting, which we could not explain.
 Code, analysis plans and all results are public.
 \end{abstract}
@@ -88,7 +88,7 @@ The changes are injected, the main evidence is simulated, and the real data have
 \begin{figure}[t]
   \centering
   \includegraphics[width=\linewidth]{figures/fig_example.pdf}
-  \caption{Two simulated users with the same average level (7000 steps) and the same 1000-step drop on day 42. Shading marks the 28-day baseline, the blue band is the baseline mean $\pm$ one personal standard deviation (the SD of the 28 baseline days in steps; the groups in \cref{sec:method} are defined on the log scale). For the steady user the drop exceeds one personal SD; for the variable user it is a third of one.}
+  \caption{Two simulated users with the same average level (7000 steps) and the same 1000-step drop on day 42. Shading marks the 28-day baseline, the blue band is the baseline mean $\pm$ one personal standard deviation (the SD of the 28 baseline days in steps; the groups in \cref{sec:method} are defined on the log scale). For the low-variability user the drop exceeds one personal SD; for the high-variability user it is a third of one.}
   \label{fig:example}
 \end{figure}
 

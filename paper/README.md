@@ -1,4 +1,4 @@
-# Paper: Do personal-baseline change detectors treat steady and variable users equally?
+# Paper: Do personal-baseline change detectors treat low- and high-variability users equally?
 
 Preprint source. Everything in the paper that is a number comes from the CSV result files of the repository
 (`../pilot/results`, read directly; this folder has no copy of them), through generated files:
