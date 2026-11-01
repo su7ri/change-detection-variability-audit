@@ -214,6 +214,26 @@ trade_md = block(txt["tradeoff_summary.md"], "Scenario: realistic")
 check("-2.86" in trade_md and "+2.27" in trade_md and "-3.37" in trade_md and "+0.34" in trade_md, "criterion cells not found in tradeoff_summary.md")
 print(f"5. criterion: absolute gap changes in size by {abs_grow:+.2f} d (needed > +1.5), standardised by {-std_shrink:+.2f} d")
 
+# ------------------------------------------------------------------ 5b. the signs stated in the R2 bullet of Section 5.4
+ts = pd.concat([load("sensitivity_tradeoff"), load("sensitivity_combos_tradeoff")]).drop_duplicates(
+    subset=["scenario", "convention", "effect", "metric", "kind", "lambda"])
+ts = ts[ts["kind"] == "sd"]
+n_set = ts["scenario"].nunique()
+check(str(n_set) == macros["AllSettings"], f"5b: {n_set} settings in the trade-off files vs AllSettings={macros['AllSettings']}")
+
+
+def sgn(conv, metric, lam):
+    sub = ts[(ts["convention"] == conv) & (ts["metric"] == metric) & (ts["lambda"] == lam)]
+    return sub["gap_high_minus_low"].to_numpy()
+
+
+a0, d0, d1, a1 = sgn("none", "alarm_rate", 0.0), sgn("absolute", "rmd", 0.0), sgn("absolute", "rmd", 1.0), sgn("none", "alarm_rate", 1.0)
+check(len(a0) == n_set and (a0 > 0).all(), "5b: alarm gap at lambda=0 is not positive in every setting")
+check((d0 < 0).all(), "5b: absolute-change delay gap at lambda=0 is not negative in every setting")
+check((d1 > 0).all(), "5b: absolute-change delay gap at lambda=1 is not positive in every setting")
+check(a1.min() > -0.5 and a1.max() < 0.2, f"5b: alarm gap at lambda=1 is not 'close to zero' ({a1.min():+.2f} to {a1.max():+.2f})")
+print(f"5b. signs in {n_set} settings: alarm gap at lambda=0 {a0.min():+.2f}..{a0.max():+.2f}, delay gap (1000 steps) at lambda=0 {d0.min():+.2f}..{d0.max():+.2f} and at lambda=1 {d1.min():+.2f}..{d1.max():+.2f}; alarm gap at lambda=1 {a1.min():+.2f}..{a1.max():+.2f}")
+
 # ------------------------------------------------------------------ 6. macros and commits
 used = set(re.findall(r"\\([A-Za-z]+)\b", main))
 body_macros = {u for u in used if u in macros}

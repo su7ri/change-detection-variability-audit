@@ -28,7 +28,7 @@ Target: arXiv/Zenodo preprint by **20 December 2026**. Exeter EPSRC DLA closes *
    5. The archived snapshot will not contain the DOI itself; that is normal. Say in the arXiv comments field: "Code archived at doi:...".
 3. `python scripts/check_numbers.py` ends with "0 failures" (run it inside the repository: it then also checks the commit list in Appendix E against `git log`).
 4. Update the commit shown in the paper if you commit after the pilot: `\commit` in `main.tex` is `fccc209`, the last pilot commit (disclosure and 10000-resample re-run). The paper's own commit will have a different hash; that is expected.
-5. Rebuild the PDF and `arxiv_source.zip`, then open the PDF once and read the abstract, Sections 3.6, 8 and Appendix E against what you remember doing.
+5. Rebuild the PDF and `arxiv_source.zip`, then open the PDF once and read the abstract, Sections 3.6, 8 and Appendix E against what you remember doing. Run `pdffonts main.pdf`: no line may say `Type 3` (the typewriter font comes from `lmodern`; without it the T1 typewriter font is a bitmap).
 
 ## C. The arXiv form
 
@@ -36,7 +36,7 @@ Target: arXiv/Zenodo preprint by **20 December 2026**. Exeter EPSRC DLA closes *
 * **Category.** Primary `stat.AP` (statistics, applications). Optional cross-lists: `stat.ME`, `cs.LG`. The primary category decides whose endorsement you need, so choose the one where you can find an endorser; the paper fits `stat.AP` best.
 * **Upload** `arxiv_source.zip` (top-level `main.tex` with `\documentclass`, `numbers.tex`, `main.bbl`, `tables/`, `figures/`). Figures are PDF (pdfLaTeX). File names use only letters, digits and `_ + - . , =`. I compiled the zip in a clean folder with `pdflatex` twice: 21 pages, no undefined references. The arXiv preview must show the same.
 * **Title** (plain text, no LaTeX): `Do personal-baseline change detectors treat steady and variable users equally?`
-* **Abstract** (plain text, 1217 characters, five sentences; the limit is 1920; no word "Abstract"): see `abstract_plain.txt`. Paste it as one paragraph.
+* **Abstract** (plain text, 1250 characters, five sentences; the limit is 1920; no word "Abstract"): see `abstract_plain.txt`. Paste it as one paragraph.
 * **Comments:** `21 pages, 5 figures, 16 tables. Code and results: https://github.com/su7ri/change-detection-variability-audit` (add the Zenodo DOI once you have it).
 * **Authors:** `Soroush Azarinejadianlangroudi` (same spelling as in the paper). An ORCID iD is optional and free (orcid.org); if you create one, link it in your arXiv account profile, not in the paper.
 * **MSC/ACM class, journal ref, DOI:** leave empty.

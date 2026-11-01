@@ -8,7 +8,7 @@ results; not a clinical validation.
 - `paper/`: the preprint (LaTeX), tables and figures generated from the result files, number checks,
   arXiv source. See `paper/README.md`.
 
-Plans were written and committed as dated text in this repository; see Appendix D of the paper for what was
+Plans were written and committed as dated text in this repository; see Appendix E of the paper for what was
 committed before and after each result.
 
 Licence: MIT (code). Citation: see `CITATION.cff`.

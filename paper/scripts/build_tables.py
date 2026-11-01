@@ -143,7 +143,7 @@ lines = [r"\begin{table}[H]", r"\centering", r"\small",
          r"\begin{tabular}{@{}lrrrrr@{}}", r"\toprule",
          r" & Alarm rate & \multicolumn{2}{c}{Delay} & \multicolumn{2}{c}{Detected in 14 days} \\",
          r"\cmidrule(lr){3-4}\cmidrule(l){5-6}",
-         r"$\lambda$ & per 100 days & 1 SD & 1000 steps & 1 SD & 1000 steps \\"]
+         r"$\lambda$ & per 100 user-days & 1 SD & 1000 steps & 1 SD & 1000 steps \\"]
 for kind, title in (("sd", "Scale: standard deviation"), ("mad", "Scale: robust (1.4826 $\\times$ MAD)")):
     lines += [r"\midrule", rf"\multicolumn{{6}}{{@{{}}l}}{{\emph{{{title}}}}} \\"]
     for lam in LAMBDAS:
@@ -293,6 +293,7 @@ lines = [r"{\footnotesize\setlength{\tabcolsep}{2.4pt}", r"\begin{longtable}{@{}
          r"simulated gap in the matching ``missing'' scenario; \emph{Sim.\ in CI}: the simulated gap lies inside the real-data interval; \emph{Informative}: the interval does not contain both "
          r"the simulated gap and zero.}\label{tab:lsfull}\\",
          r"\toprule Detector & Change & Metric & Real gap [95\% CI] & Verdict & Simulated & Sim.\ in CI & Informative \\ \midrule \endfirsthead",
+         r"\multicolumn{8}{@{}l}{\small\textbf{Table \thetable} (continued)}\\[2pt]",
          r"\toprule Detector & Change & Metric & Real gap [95\% CI] & Verdict & Simulated & Sim.\ in CI & Informative \\ \midrule \endhead",
          r"\bottomrule \endlastfoot"]
 MET = {"alarm_rate": "alarm rate", "rmd": "delay", "det14": "det. 14 d"}
@@ -314,7 +315,7 @@ lines = [r"\begin{table}[t]", r"\centering", r"\small",
          r"\begin{tabular}{@{}lrrrrr@{}}", r"\toprule",
          r"Tercile & Users & Median daily steps & \shortstack[r]{Share of days with\\no step count} & Median log-SD & Mean evaluation days \\", r"\midrule"]
 for _, t in LS_TERCILES.iterrows():
-    lines.append(f"{t.tercile.capitalize()} & {int(t.users)} & {int(t.median_steps):,} & {t.share_no_row:.3f} & {t.median_log_sd:.2f} & {t.mean_eval_len:.1f} \\\\".replace(",", r"\,"))
+    lines.append(f"{t.tercile.capitalize()} & {int(t.users)} & {int(t.median_steps)} & {t.share_no_row:.3f} & {t.median_log_sd:.2f} & {t.mean_eval_len:.1f} \\\\")
 lines += [r"\bottomrule", r"\end{tabular}", r"\end{table}"]
 write("lifesnaps_terciles.tex", "\n".join(lines) + "\n")
 
@@ -392,7 +393,7 @@ lines = table_open("tab:lambda_ci",
                    r"Mixing own and population scale (base simulation): gaps (high $-$ low tercile) with 95\% intervals for every cell of \cref{tab:lambda}. Bold: meaningful. Alarm rate per 100 user-days; delay in days; detection as a proportion within 14 days.",
                    6, r"@{}lrrrrr@{}", "scriptsize", landscape=False, tabcolsep=2.5)
 lines += [r" & Alarm rate & \multicolumn{2}{c}{Delay} & \multicolumn{2}{c}{Detected in 14 days} \\", r"\cmidrule(lr){3-4}\cmidrule(l){5-6}",
-          r"$\lambda$ & per 100 days & 1 SD & 1000 steps & 1 SD & 1000 steps \\"]
+          r"$\lambda$ & per 100 user-days & 1 SD & 1000 steps & 1 SD & 1000 steps \\"]
 for kind, title in (("sd", "Scale: standard deviation"), ("mad", r"Scale: robust ($1.4826\times$ MAD)")):
     lines += [r"\midrule", rf"\multicolumn{{6}}{{@{{}}l}}{{\emph{{{title}}}}} \\"]
     for lam in LAMBDAS:

@@ -110,7 +110,7 @@ def fig_example():
 
 # ============================================================ Figure 2: audit forest plot (realistic scenario)
 def fig_audit():
-    panels = [("(a) Alarm rate, per 100 days", "none", 0.0, "alarm_rate", "episodes"),
+    panels = [("(a) Alarm rate\nper 100 user-days", "none", 0.0, "alarm_rate", "episodes"),
               ("(b) Delay in days, 1 SD change", "standardised", 1.0, "rmd", "days"),
               ("(c) Detected in 14 days, 1 SD", "standardised", 1.0, "det14", "proportion")]
     fig, axes = plt.subplots(1, 3, figsize=(6.5, 2.0), sharey=True)
@@ -142,7 +142,7 @@ def fig_audit():
 
 # ============================================================ Figure 3: lambda sweep
 def fig_lambda():
-    panels = [("(a) Alarm rate, per 100 days", "alarm_rate", [("none", 0.0, BLUE, "o", True, "no change")], "episodes per 100 user-days"),
+    panels = [("(a) Alarm rate\nper 100 user-days", "alarm_rate", [("none", 0.0, BLUE, "o", True, "no change")], "episodes per 100 user-days"),
               ("(b) Delay in days", "rmd", [("standardised", 1.0, BLUE, "o", True, "1 personal SD"),
                                     ("absolute", 1000.0, ORANGE, "s", False, "1000 steps")], "days"),
               ("(c) Detected in 14 days", "det14", [("standardised", 1.0, BLUE, "o", True, "1 personal SD"),
@@ -186,7 +186,7 @@ def fig_sensitivity():
     ypos = {v: n - 1 - i for i, (v, _, _) in enumerate(items)}
     fig, axes = plt.subplots(1, 3, figsize=(6.5, 4.6), sharey=True)
     # (a) alarm gap at lambda 0 and 1
-    for ax, title, unit in zip(axes, ("(a) Alarm rate, per 100 days", "(b) Delay, 1000 steps (days)", "(c) Delay, 1 SD change (days)"),
+    for ax, title, unit in zip(axes, ("(a) Alarm rate\nper 100 user-days", "(b) Delay, 1000 steps (days)", "(c) Delay, 1 SD change (days)"),
                                ("", "", "")):
         ax.set_title(title, loc="left", fontsize=7.5)
         ax.set_xlabel("gap, high minus low")
@@ -231,7 +231,7 @@ def fig_sensitivity():
 def fig_lifesnaps():
     fl = life_flags(ls, pilot, trade, "missing")
     fl_log = life_flags(ls_log[ls_log.detector.isin(DETECTORS)], pilot, trade, "realistic_log")
-    panels = [("(a) Alarm rate, per 100 days", "none", 0.0, "alarm_rate", "episodes"),
+    panels = [("(a) Alarm rate\nper 100 user-days", "none", 0.0, "alarm_rate", "episodes"),
               ("(b) Delay in days, 1 SD change", "standardised", 1.0, "rmd", "days"),
               ("(c) Delay in days, 1000 steps", "absolute", 1000.0, "rmd", "days")]
     fig, axes = plt.subplots(1, 3, figsize=(6.5, 2.6), sharey=True)
