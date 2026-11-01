@@ -362,7 +362,7 @@ def ci_bold(r, d=2):
 
 def table_open(label, caption, ncols, colspec, size="footnotesize", landscape=False, tabcolsep=3.0):
     pre = [r"\begin{landscape}"] if landscape else []
-    return pre + [r"\begin{table}[H]", r"\centering", rf"\{size}", rf"\setlength{{\tabcolsep}}{{{tabcolsep}pt}}",
+    return pre + [r"\begin{table}[!htbp]", r"\centering", rf"\{size}", rf"\setlength{{\tabcolsep}}{{{tabcolsep}pt}}",
                   rf"\caption{{{caption}}}", rf"\label{{{label}}}", rf"\begin{{tabular}}{{{colspec}}}", r"\toprule"]
 
 
@@ -373,11 +373,11 @@ def table_close(landscape=False):
 # --- scenarios with intervals: alarm-rate gap (four detectors) and delay gap at one personal SD (three personal detectors)
 lines = table_open("tab:scenarios_ci",
                    r"Alarm-rate gap (high $-$ low tercile, per 100 user-days) with 95\% interval in the eight simulated scenarios of \cref{tab:scenarios}. Bold: meaningful by the verdict rule.",
-                   5, r"@{}p{3.0cm}rrrr@{}", "scriptsize", landscape=True)
+                   5, r"@{}p{3.0cm}rrrr@{}", "scriptsize", landscape=False)
 lines += [r"Scenario & Fixed & Personal z-score & EWMA & CUSUM \\", r"\midrule"]
 for sc in SCEN_ORDER:
     lines.append(SCEN_SHORT[sc] + " & " + " & ".join(ci_bold(cell(pilot, scenario=sc, detector=d, convention="none", metric="alarm_rate")) for d in DETECTORS) + r" \\")
-lines += table_close(landscape=True)
+lines += table_close(landscape=False)
 lines += table_open("tab:scenarios_ci_delay",
                     r"Delay gap (days, high $-$ low tercile) for a change of one personal SD, with 95\% interval, in the eight simulated scenarios; the three personal-baseline detectors. No cell is meaningful.",
                     4, r"@{}p{3.6cm}rrr@{}", "footnotesize")
@@ -390,7 +390,7 @@ write("scenarios_ci.tex", "\n".join(lines) + "\n")
 # --- lambda sweep with intervals
 lines = table_open("tab:lambda_ci",
                    r"Mixing own and population scale (base simulation): gaps (high $-$ low tercile) with 95\% intervals for every cell of \cref{tab:lambda}. Bold: meaningful. Alarm rate per 100 user-days; delay in days; detection as a proportion within 14 days.",
-                   6, r"@{}lrrrrr@{}", "scriptsize", landscape=True, tabcolsep=2.5)
+                   6, r"@{}lrrrrr@{}", "scriptsize", landscape=False, tabcolsep=2.5)
 lines += [r" & Alarm rate & \multicolumn{2}{c}{Delay} & \multicolumn{2}{c}{Detected in 14 days} \\", r"\cmidrule(lr){3-4}\cmidrule(l){5-6}",
           r"$\lambda$ & per 100 days & 1 SD & 1000 steps & 1 SD & 1000 steps \\"]
 for kind, title in (("sd", "Scale: standard deviation"), ("mad", r"Scale: robust ($1.4826\times$ MAD)")):
@@ -401,7 +401,7 @@ for kind, title in (("sd", "Scale: standard deviation"), ("mad", r"Scale: robust
             conv, eff, met = CONV_KEYS[key]
             out.append(ci_bold(cell(trade, scenario="realistic", kind=kind, convention=conv, effect=eff, metric=met, **{"lambda": lam})))
         lines.append(f"{lam:g} & " + " & ".join(out) + r" \\")
-lines += table_close(landscape=True)
+lines += table_close(landscape=False)
 write("lambda_ci.tex", "\n".join(lines) + "\n")
 
 # --- sensitivity with intervals
@@ -416,7 +416,7 @@ def vlabel(v):
 lines = table_open("tab:sens_ci_a",
                    r"Robustness: delay gap (days, high $-$ low tercile) for a change of one personal SD, and CUSUM alarm-rate gap (per 100 user-days), with 95\% intervals, in the 20 settings of \cref{tab:sens}. "
                    r"No delay cell is meaningful (criterion R1). Bold: meaningful.",
-                   5, r"@{}p{4.6cm}rrrr@{}", "scriptsize", landscape=True)
+                   5, r"@{}p{4.6cm}rrrr@{}", "scriptsize", landscape=False)
 lines += [r"Setting & z-score, delay 1 SD & EWMA, delay 1 SD & CUSUM, delay 1 SD & CUSUM, alarm rate \\", r"\midrule"]
 for r_ in allres:
     if r_["variant"] == "combo_weak":
@@ -426,11 +426,11 @@ for r_ in allres:
     cells_ = [ci_bold(cell(gv_, detector=d, convention="standardised", effect=1.0, metric="rmd")) for d in PERSONAL]
     cells_.append(ci_bold(cell(gv_, detector="cusum", convention="none", metric="alarm_rate")))
     lines.append(vlabel(r_["variant"]) + " & " + " & ".join(cells_) + r" \\")
-lines += table_close(landscape=True)
+lines += table_close(landscape=False)
 lines += table_open("tab:sens_ci_b",
                     r"Robustness: gaps (high $-$ low tercile) with 95\% intervals at the two ends of the mixing weight, in the 20 settings of \cref{tab:sens} (criteria R2 and R3). "
                     r"Alarm rate per 100 user-days; delay in days for a change of 1000 steps. Bold: meaningful.",
-                    5, r"@{}p{4.6cm}rrrr@{}", "scriptsize", landscape=True)
+                    5, r"@{}p{4.6cm}rrrr@{}", "scriptsize", landscape=False)
 lines += [r" & \multicolumn{2}{c}{Alarm-rate gap} & \multicolumn{2}{c}{Delay gap, 1000 steps} \\", r"\cmidrule(lr){2-3}\cmidrule(lr){4-5}",
           r"Setting & $\lambda=0$ & $\lambda=1$ & $\lambda=0$ & $\lambda=1$ \\", r"\midrule"]
 for r_ in allres:
@@ -443,7 +443,7 @@ for r_ in allres:
               ci_bold(cell(tv_, convention="absolute", effect=1000.0, metric="rmd", **{"lambda": 0.0})),
               ci_bold(cell(tv_, convention="absolute", effect=1000.0, metric="rmd", **{"lambda": 1.0}))]
     lines.append(vlabel(r_["variant"]) + " & " + " & ".join(cells_) + r" \\")
-lines += table_close(landscape=True)
+lines += table_close(landscape=False)
 write("sensitivity_ci.tex", "\n".join(lines) + "\n")
 
 # --- how many 'meaningful' cells have an interval entirely beyond the margin (meaningful is a descriptive label, not a test)
