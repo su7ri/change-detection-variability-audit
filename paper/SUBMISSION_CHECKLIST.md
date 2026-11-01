@@ -53,7 +53,6 @@ Target: arXiv/Zenodo preprint by **20 December 2026**. Exeter EPSRC DLA closes *
 | aminikhanghahi2017 | Aminikhanghahi and Cook, KAIS 51, 2017 | https://doi.org/10.1007/s10115-016-0987-z |
 | mishra2020 | Mishra et al., Nat. Biomed. Eng. 4, 2020 | https://doi.org/10.1038/s41551-020-00640-6 |
 | alavi2022 | Alavi et al., Nat. Med. 28, 2022 | https://doi.org/10.1038/s41591-021-01593-2 |
-| (footnote) | Alavi et al., medRxiv preprint | https://doi.org/10.1101/2021.06.13.21258795 |
 | cacheda2026 | Cacheda et al., Digital Health 12, 2026 | https://doi.org/10.1177/20552076261477919 |
 | morenomunoz2018 | Moreno-Muñoz et al., arXiv:1809.04197 | https://arxiv.org/abs/1809.04197 |
 | yfantidou2022 | Yfantidou et al., Sci. Data 9, 2022 | https://doi.org/10.1038/s41597-022-01764-x |

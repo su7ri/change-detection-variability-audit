@@ -98,7 +98,7 @@ The fixed-threshold, EWMA and CUSUM detectors we audit are classical tools of se
 
 \paragraph{Personal baselines in wearables.}
 Work on pre-symptomatic infection detection from smartwatch data uses each person's own history as the reference \citep{mishra2020,alavi2022}, and \citet{cacheda2026} model deviations from personalised baselines for the early detection of infectious diseases.
-The preprint version of \citet{alavi2022} reports an alert rule with a fixed offset above each person's own baseline, and notes that some individuals have a very unstable baseline.\footnote{medRxiv preprint, doi:10.1101/2021.06.13.21258795.}
+\citet{alavi2022} describe an alert rule that compares each night's resting heart rate with the person's own baseline using fixed offsets in beats per minute, and note that some individuals have an unstable baseline.
 \citet{morenomunoz2018} detect changes in smartphone data with a hierarchical circadian model, motivated by relapse detection in psychiatric patients.
 \citet{tolosa2026} mark a day as a drift day when a composite of per-user rolling z-scores of Fitbit and phone data from university students exceeds a participant-specific quantile threshold; they judge their detectors against proxy labels derived from the same rolling baselines, with precision, recall and AUC.
 In our searches we found no evaluation of how the alarm rate and detection delay of such detectors depend on a person's own variability; the studies above ask other questions. This was not a systematic review, and not finding a study does not show that none exists.
