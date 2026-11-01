@@ -32,7 +32,7 @@ SCEN_LABEL = {
     "realistic": "Realistic (base case)",
     "realistic_log": "Realistic, detectors on log steps",
     "symmetric": "Symmetric noise on the raw scale",
-    "missing": "Missing days (more for variable users)",
+    "missing": "Missing days (more for high-variability users)",
     "short14": "14-day windows",
     "short7": "7-day windows",
     "missing_short14": "Missing days and 14-day windows",

@@ -57,7 +57,7 @@ It does not automatically do so for the spread.
 Day-to-day variability differs a great deal between people, and the same drop in steps is small for a person whose days vary widely and large for a person whose days are alike (\cref{fig:example}).
 
 This matters for how such a system treats people.
-If the alarm threshold is a fixed number of steps, people with variable days will cross it more often by chance but will also be detected sooner when something really changes.
+If the alarm threshold is a fixed number of steps, people whose days vary widely will cross it more often by chance but will also be detected sooner when something really changes.
 If the threshold is scaled by each person's own variability, every person is treated alike in units of their own variability, but a given absolute change then takes longer to detect in a person whose days vary widely.
 Which of these counts as equal treatment is a design choice, and it is rarely stated.
 Clinical chemistry met the same issue long ago: within-person biological variation decides how large a change between two results must be before it is called real \citep{fraser1989}.
@@ -69,13 +69,13 @@ The comparison is made at a matched operating point: each detector is tuned so t
 Without this, differences in delay would just reflect differences in false-alarm rate.
 We measure alarm rate, detection delay and the share of changes detected within 14 days, and we judge the gaps against margins stated in an analysis plan written before the runs (\cref{sec:plan}).
 
-That a fixed threshold gives variable users more alarms but faster detection, and that equal treatment in personal standard deviations is unequal in steps, is largely predictable from the algebra, and we do not present it as a finding.
+That a fixed threshold gives high-variability users more alarms but faster detection, and that equal treatment in personal standard deviations is unequal in steps, is largely predictable from the algebra, and we do not present it as a finding.
 The value of the audit lies in a protocol that makes the two views comparable on the same footing, in the explicit choice between two definitions of equal treatment, and in the measured size, stability and limits of the gaps.
 
 \paragraph{Contributions.}
 \begin{enumerate}
   \item An audit protocol for personal-baseline detectors: matched alarm rate, variability terciles, two definitions of equal treatment (the same change in personal standard deviations, and the same change in steps), margins stated in the analysis plan, and bootstrap intervals over users.
-  \item Simulation results, expected in direction and new in size and stability. The fixed threshold treats the groups unequally. The three personal detectors show no meaningful gap in delay or detection at a change of one personal standard deviation, in any of 20 simulator settings, but they detect an absolute change in steps later in variable users.
+  \item Simulation results, expected in direction and new in size and stability. The fixed threshold treats the groups unequally. The three personal detectors show no meaningful gap in delay or detection at a change of one personal standard deviation, in any of 20 simulator settings, but they detect an absolute change in steps later in high-variability users.
   \item A detector family whose scale mixes own and population variability (weight $\lambda$). It moves the gaps between the two definitions of equal treatment, with a balanced setting in the base simulation. That setting is not stable: it disappears when the users' variability is very spread out. We report this as a tuning trade-off, not as a new method.
   \item A small check on 51 users of the open LifeSnaps data, 17 per group. Most comparisons are uninformative. One result, the CUSUM alarm-rate gap, is not explained by anything we simulated (\cref{sec:ls}).
 \end{enumerate}
@@ -151,7 +151,7 @@ The analysis plan was written before the runs and kept, with dated amendments, i
 \section{Simulation study}\label{sec:sim}
 Following ADEMP \citep{morris2019}:
 \textbf{Aims}: to compare groups of different day-to-day variability on alarm rate, delay and detection, for four detectors, and to see how the gaps depend on the definition of equal treatment.
-\textbf{Data-generating process}: 300 users $\times$ 20 replicates $\times$ 84 days of daily steps. Each user has a level (log-normal, median 7000), a log-scale variability $\sigma$ (log-normal across users, median 0.30, clipped to 0.10--0.90), an autocorrelation (uniform 0 to 0.5), and a weekly cycle (amplitude uniform 0 to 0.2). Noise is Student-$t$ with 4 degrees of freedom on the log scale. Full details are in \cref{app:sim}. In the base case (``realistic'') nothing is missing; other scenarios add missing days (more for variable users), shorter windows, symmetric noise, or run the detectors on log steps.
+\textbf{Data-generating process}: 300 users $\times$ 20 replicates $\times$ 84 days of daily steps. Each user has a level (log-normal, median 7000), a log-scale variability $\sigma$ (log-normal across users, median 0.30, clipped to 0.10--0.90), an autocorrelation (uniform 0 to 0.5), and a weekly cycle (amplitude uniform 0 to 0.2). Noise is Student-$t$ with 4 degrees of freedom on the log scale. Full details are in \cref{app:sim}. In the base case (``realistic'') nothing is missing; other scenarios add missing days (more for high-variability users), shorter windows, symmetric noise, or run the detectors on log steps.
 \textbf{Estimands}: the high-minus-low gaps in alarm rate, restricted mean delay and detection within 14 days.
 \textbf{Methods}: the four detectors and the mixed-scale family.
 \textbf{Performance measures}: the gaps with bootstrap intervals and the verdicts above.
@@ -161,7 +161,7 @@ All of this is an assumption set chosen for the audit, not an estimate from real
 \subsection{Audit of the four detectors}\label{sec:audit}
 \Cref{tab:audit} and \cref{fig:audit} show the base case.
 \paragraph{Fixed threshold.}
-High-variability users receive \GrpFixedHighAlarm{} alarm episodes per 100 user-days against \GrpFixedLowAlarm{} for low-variability users (gap \RealFixedAlarmCI). For a change of one personal standard deviation the delay gap is \RealFixedRmdStdCI{} days (the high group is detected sooner) and the gap in the share detected within 14 days is \RealFixedDetStd. These are meaningful gaps; they are expected, because a one-SD change is a larger step for variable users.
+High-variability users receive \GrpFixedHighAlarm{} alarm episodes per 100 user-days against \GrpFixedLowAlarm{} for low-variability users (gap \RealFixedAlarmCI). For a change of one personal standard deviation the delay gap is \RealFixedRmdStdCI{} days (the high group is detected sooner) and the gap in the share detected within 14 days is \RealFixedDetStd. These are meaningful gaps; they are expected, because a one-SD change is a larger step for high-variability users.
 \paragraph{Personal-baseline detectors.}
 For a change of one personal standard deviation, no delay or detection gap reaches the margin. The delay gaps are \RealZscoreRmdStd{} (z-score), \RealEwmaRmdStd{} (EWMA) and \RealCusumRmdStd{} days (CUSUM), the detection gaps \RealZscoreDetStd, \RealEwmaDetStd{} and \RealCusumDetStd, and all intervals lie inside the margins.
 Alarm-rate gaps are \RealZscoreAlarm{} (z-score) and \RealEwmaAlarm{} (EWMA), both negligible, and \RealCusumAlarmCI{} for CUSUM, where the high group gets fewer alarms (\GrpCusumHighAlarm{} against \GrpCusumLowAlarm) and the interval reaches the margin; we call it inconclusive.
@@ -223,7 +223,7 @@ The reading is: the audit finding R1 is robust in this simulator; the crossing h
 
 \subsection{Does the scale of the z-score matter?}\label{sec:fixedscale}
 The z-score divides by the moving SD of the 21 days before the last week, whereas EWMA and CUSUM use the SD of the baseline. To see whether the z-score's pattern depends on that choice, we ran a version, $\mathrm{z}_0$, that divides the same window difference by the baseline SD $s_0$. This check was added after all other results were known, in response to a reader's question; its plan, with three predictions, was written down before it was run (\cref{app:timeline}). It was run in the base simulation and in the simulation with missing days.
-All three predictions held in both scenarios. $\mathrm{z}_0$ shows no meaningful delay or detection gap at one personal SD (delay gap \FsRealRmdStdCI{} days in the base case and \FsMissRmdStdCI{} with missing days); its alarm-rate gap is \FsRealAlarmVerdict{} in both (\FsRealAlarmCI{} and \FsMissAlarmCI{}); and it is slower for variable users when every user loses 1000 steps (\FsRealRmdAbsCI{} and \FsMissRmdAbsCI{} days), as the moving-scale z-score is (\cref{tab:fixedscale}). In these two scenarios the z-score's pattern therefore does not depend on which of the two scales it uses. The CUSUM alarm-rate gap (\RealCusumAlarmCI{} in the base case) is not reproduced by $\mathrm{z}_0$, so the use of a baseline scale is not what produces it.
+All three predictions held in both scenarios. $\mathrm{z}_0$ shows no meaningful delay or detection gap at one personal SD (delay gap \FsRealRmdStdCI{} days in the base case and \FsMissRmdStdCI{} with missing days); its alarm-rate gap is \FsRealAlarmVerdict{} in both (\FsRealAlarmCI{} and \FsMissAlarmCI{}); and it is slower for high-variability users when every user loses 1000 steps (\FsRealRmdAbsCI{} and \FsMissRmdAbsCI{} days), as the moving-scale z-score is (\cref{tab:fixedscale}). In these two scenarios the z-score's pattern therefore does not depend on which of the two scales it uses. The CUSUM alarm-rate gap (\RealCusumAlarmCI{} in the base case) is not reproduced by $\mathrm{z}_0$, so the use of a baseline scale is not what produces it.
 
 \input{tables/fixedscale.tex}
 
@@ -274,7 +274,7 @@ First, report operating characteristics by variability group, not only pooled: p
   \item Only 17 users per tercile are in the real-data check, the changes there are injected, and genuine changes in the series are unlabelled; the check cannot confirm or refute the simulated findings. Its constants were tuned on the same users; a cross-fitted version (\cref{sec:crossfit}) keeps the signs of the large gaps but not every verdict at a margin.
   \item Variability groups are estimated from 28 days and are noisy; the margins are judgement calls. The verdict labels are descriptive, not tests: in the base-simulation audit (\cref{sec:audit}), \AuditClear{} of \AuditMeaningful{} meaningful cells lie entirely beyond their margins, but in the LifeSnaps check only \LsClear{} of \LsMeaningful{} do.
   \item The groups are defined on the log-scale SD, whereas the standardised change and the scale of EWMA and CUSUM use the SD in steps (\cref{sec:method}); we did not vary the grouping variable.
-  \item Changes of 1--2 personal SD are floored at zero steps for very variable users (at 2 SD, 40\% of post-onset days in the high tercile against 5\% in the low tercile in the base case), which is why one personal SD is the primary size.
+  \item Changes of 1--2 personal SD are floored at zero steps for users with very high variability (at 2 SD, 40\% of post-onset days in the high tercile against 5\% in the low tercile in the base case), which is why one personal SD is the primary size.
   \item The gap between the two definitions of equal treatment is partly algebraic: a fixed shift is a different multiple of different users' standard deviations. What we add is its size and shape, the matched-alarm-rate protocol, and the check of how far it holds.
   \item We did not study demographic groups; variability may be correlated with age, work or health, and we do not know whether it is. ``Fair'' is used descriptively; we make no claim that these gaps cause harm.
   \item The real CUSUM alarm-rate gap is unexplained.

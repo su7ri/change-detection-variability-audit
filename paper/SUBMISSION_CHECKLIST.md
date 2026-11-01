@@ -75,7 +75,7 @@ The sentence "We did not find in our searches an evaluation of how the alarm rat
 
 ## E. How to describe the result in emails, the DLA summary and the arXiv comments
 
-* Write every simulated result as a simulated result: "in simulation, a fixed threshold gives variable users about 3 more alarms per 100 user-days"; never "variable users get more alarms".
+* Write every simulated result as a simulated result: "in simulation, a fixed threshold gives high-variability users about 3 more alarms per 100 user-days"; never "high-variability users get more alarms".
 * The real-data part in one sentence: "a check on 51 users of the open LifeSnaps data (17 per group) is mostly inconclusive, and one CUSUM result there is unexplained".
 * The contribution is the audit protocol and the explicit choice between two definitions of equal treatment, not the fixed-threshold result, which is predictable from the algebra. Say "audit", not "new method", and "analysis plan written before the runs", not "pre-registered".
 
