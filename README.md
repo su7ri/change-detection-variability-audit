@@ -11,4 +11,7 @@ results; not a clinical validation.
 Plans were written and committed as dated text in this repository; see Appendix E of the paper for what was
 committed before and after each result.
 
+Preprint (PDF, CC BY 4.0): https://doi.org/10.5281/zenodo.23898042
+Code archive (this repository, release v1.0-preprint): https://doi.org/10.5281/zenodo.23865000
+
 Licence: MIT (code). Citation: see `CITATION.cff`.
